@@ -1,0 +1,11 @@
+const {test}=require('node:test');
+const assert=require('node:assert/strict');
+const {calculate,F}=require('./model.js');
+const base={price:1,mass:2,electrons:2,utilization:100,tariff:.3,voltage:1,faradaic:100,supply:100,amount:1};
+const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-10,`${a} != ${b}`);
+test('workbook hydrogen example, using precise Faraday constant',()=>{const r=calculate(base);close(r.chemical,.001);close(r.electrical,.008040444343333334);assert.equal(r.winner,'reagent');close(r.breakEven,.12437123588181208);});
+test('break-even reverses ranking',()=>{const v=calculate(base).breakEven;assert.equal(calculate({...base,voltage:v}).winner,'equal');assert.equal(calculate({...base,voltage:v*.99}).winner,'electricity');assert.equal(calculate({...base,voltage:v*1.01}).winner,'reagent');});
+test('independent efficiency and scale adjustments',()=>{const r=calculate({...base,faradaic:50,supply:80,utilization:50,amount:10});close(r.chemical,.002);close(r.electrical,calculate(base).electrical/0.4);close(r.electricalTotal,r.electrical*10);close(r.energy,F*10/3600000/.4);});
+test('zero tariff, zero price and zero voltage are meaningful',()=>{assert.equal(calculate({...base,tariff:0}).breakEven,null);assert.equal(calculate({...base,tariff:0,price:0}).winner,'equal');assert.equal(calculate({...base,price:0}).ratio,null);assert.equal(calculate({...base,voltage:0}).electrical,0);});
+test('reject invalid inputs rather than displaying stale results',()=>{for(const patch of [{mass:0},{electrons:0},{price:-1},{voltage:-1},{tariff:-1},{faradaic:0},{supply:101},{amount:0},{utilization:NaN},{mass:Infinity},{price:''}])assert.throws(()=>calculate({...base,...patch}));});
+test('oxygen and ammonia reaction-basis corrections',()=>{close(calculate({...base,price:.15,mass:31.9988,electrons:4}).chemical,.001199955);close(calculate({...base,price:.51,mass:17.03,electrons:3}).chemical,.0028951);close(calculate({...base,price:.51,mass:17.03,electrons:6}).chemical,.00144755);});
