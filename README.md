@@ -1,0 +1,49 @@
+# Electron Cost
+
+A small, dependency-free HTML tool comparing chemical reagent costs with electrical energy costs per mole of useful electron equivalents. Visual styling follows enLepre's personal website and CitationNetwork: Georgia, warm paper, ink, fine rules, and restrained teal/plum chart accents.
+
+Open `index.html` directly for offline calculations, or serve this directory over HTTP. No build, account, external scripts, or API keys are required. Shared links work for anyone who can access the same hosted page. The URL fragment stores the scenario; inputs are not uploaded. CSV export includes the complete input basis and outputs.
+
+## Features
+
+- Ten workbook reagent scenarios plus custom inputs, and thirteen electricity scenarios plus a custom tariff.
+- Editable full cell voltage, mass price, molar mass, electron equivalents, reagent utilization, Faradaic efficiency, and power supply efficiency.
+- Live winner, relative cost, break-even voltage, voltage plot, source ranking, and batch totals.
+- Scenario sharing, CSV download, responsive layout, keyboard controls, and light/dark themes.
+
+## Calculation basis
+
+`C_chemical = price_USD_per_kg * molar_mass_g_per_mol / (1000 * electron_equivalents * utilization)`
+
+`C_electrical = tariff_USD_per_kWh * F * full_cell_voltage / (3600000 * faradaic_efficiency * power_supply_efficiency)`
+
+Efficiencies are fractions in these equations. F = 96485.33212 C/mol. The break-even voltage sets these two costs equal. Use actual operating cell voltage, not mains voltage or a single electrode potential versus a reference. Zero tariff has no unique crossing. Zero reagent cost makes the electrical/chemical ratio undefined. Negative prices and voltages are outside this simple consumption model.
+
+This does not assess reaction feasibility, kinetics, paired electrode reactions, or full process economics. Reagents are comparable only for a defined transformation and useful electron basis. Extra reagents, capital costs, separation, waste, and labor are excluded. Efficiencies are assumed constant over the voltage plot.
+
+## Workbook provenance
+
+Data are transcribed from the user-provided `Cost of electricity.xlsx`, Chemical rows 3–12 and Electricity rows 3–22. The workbook itself is not included. `data.js` retains original row numbers and supplied price-source URLs. These are undated illustrative prices, not current verified quotations. The workbook marks LCOE/VALCOE as AI-generated estimates; Sudan is also unverified. Generation cost is not necessarily a delivered tariff.
+
+Corrections are explicit in the interface:
+
+- O₂ molar mass: 31.9988 g/mol, replacing 16 g/mol with the four-electron water pathway. [NIST molecular data](https://webbook.nist.gov/cgi/cbook.cgi?ID=C7782447).
+- NH₃ to N₂: 3 e⁻ per NH₃ (2 NH₃ → N₂ + 6 H⁺ + 6 e⁻), replacing the workbook's 6 per molecule. Other nitrogen products require their own stoichiometry.
+- Borohydride is labelled sodium borohydride because the workbook's 37.83 g/mol corresponds to NaBH₄. Eight equivalents is an ideal complete-utilization basis.
+- Adiponitrile retains the workbook's unverified 6 e⁻ with an explicit reaction-unspecified note.
+- “Original workbook chemistry” restores oxygen/ammonia inputs. It does not reproduce lookup errors, drifting kWh conversions, or the rounded Faraday constant.
+- Every kWh is exactly 3,600,000 J; [NIST constants](https://physics.nist.gov/cuu/Constants/) provide the Faraday basis.
+
+Selecting another reagent or switching chemistry mode reloads that preset's price, molar mass, and electron count. Efficiencies stay unchanged. Ranking uses original source tariffs; an edited tariff is used in the main comparison.
+
+## Verification
+
+Run `node --test model.test.cjs`. Tests cover independently calculated hydrogen costs, break-even inversion, efficiency and scale factors, zero-price cases, invalid inputs, and oxygen/ammonia corrections.
+
+Initial delivery: all six numerical tests and JavaScript syntax checks passed. Browser preview was blocked by the development environment's security policy, so visual layout, clipboard/download behaviour and browser interactions have not been verified in a browser.
+
+## GitHub Pages
+
+The included GitHub Actions workflow tests and deploys the static site on pushes to `main`. In repository **Settings → Pages**, select **GitHub Actions** as the source. Expected project URL after successful deployment: `https://enlepre.github.io/electronsCost/`.
+
+All assets use relative paths, so the application works under the repository subpath. To preview locally, run any static file server from this directory.
