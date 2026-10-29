@@ -58,20 +58,20 @@
 .source-facts{display:grid;grid-template-columns:190px 1fr;gap:8px 20px;font-size:14px;line-height:1.5;margin:5px 0 16px}
 .source-facts dt{color:var(--muted)}.source-facts dd{margin:0;overflow-wrap:anywhere}
 .source-entry .source-reference{color:var(--ink)}
-.derivation{max-width:780px;padding:52px 0 40px}
+.derivation{max-width:660px;padding:52px 0 40px}
 .support-page .derivation h1{font-size:clamp(36px,5vw,48px);letter-spacing:-.035em;line-height:1.15;margin:0 0 14px}
 .derivation-lead{color:var(--muted);font-size:18px;margin-bottom:36px}
-.derivation section{margin-top:34px}
+.derivation section{margin-top:42px}
 .derivation h2{font-size:20px;font-weight:700;margin:0 0 14px}
-.derivation p{font-size:16px;line-height:1.65;margin:12px 0}
-.derivation .derivation-note{font-size:14px;line-height:1.6;color:var(--muted)}
+.derivation p{font-size:16px;line-height:1.95;margin:16px 0}
+.derivation .derivation-note{font-size:14px;line-height:1.9;color:var(--muted)}
 .definition-table{overflow-x:auto}
-.derivation table{font-size:14px}.derivation th{position:static}
-.derivation td,.derivation th{text-align:left!important;padding:9px 12px 9px 0;white-space:normal!important}
+.derivation table{font-size:14px;line-height:1.8}.derivation th{position:static}
+.derivation td,.derivation th{text-align:left!important;padding:12px 12px 12px 0;white-space:normal!important}
 .derivation th[scope=row]{color:var(--ink);width:64px}
 .derivation td:last-child{white-space:nowrap!important}
 .derivation math{font-family:'Cambria Math','STIX Two Math','Times New Roman',serif;font-size:1.08em;color:var(--ink)}
-.derivation-equation{display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center;gap:14px;margin:22px 0}
+.derivation-equation{display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center;gap:14px;margin:28px 0}
 .math-scroll{overflow-x:auto;padding:12px 2px}
 .math-scroll math{font-size:22px;margin:0}
 .equation-number{font-size:15px;text-align:right;color:var(--muted)}
