@@ -60,6 +60,8 @@ el('energy').addEventListener('change',()=>{
 function openCustom(){
   // The detailed editor needs a complete scenario; the unchosen side starts with its documented default.
   const s={...scenario,reagent:scenario.reagent||'h2-grey',energy:scenario.energy||'eu'};
+  if(!scenario.reagent){const r=REAGENTS.find(r=>r.id==='h2-grey');s.price=r.price;s.mass=r.mass;s.electrons=r.n;}
+  if(!scenario.energy)s.tariff=ENERGY.find(e=>e.id==='eu').tariff;
   ScenarioNav.save(s);location.href='details.html#scenario='+encodeURIComponent(JSON.stringify(s));
 }
 el('voltage-slider').addEventListener('input',()=>{scenario.voltage=Number(el('voltage-slider').value);render();});

@@ -14,12 +14,12 @@ function loadReagent(){const r=reagent();$('price').value=r.price;$('mass').valu
 function loadEnergy(){$('tariff').value=energy().tariff;}
 function annotate(){
   const r=reagent(),e=energy();
-  $('reagent-type').textContent=r.type + (r.row ? ' · workbook preset, editable' : '');
+  $('reagent-type').textContent=r.type + (r.source ? ' · '+r.basis+', editable' : '');
   $('reaction').textContent=($('legacy').checked?'Original workbook chemistry selected. ':'')+r.note;
-  $('energy-note').textContent=e.row ? 'Workbook example · undated'+(e.row>=11?' · unverified generation-cost estimate':'') : 'Enter your delivered electricity price.';
+  $('energy-note').textContent=e.source ? e.basis+' · '+e.period : 'Enter your delivered electricity price.';
   const p=$('provenance');p.replaceChildren();
-  p.append('Selected inputs: '+(r.row?'Chemical!B'+r.row+':E'+r.row:'custom reagent')+'; '+(e.row?'Electricity!C'+e.row:'custom tariff')+'. Edited values override these presets. ');
-  if(r.source){const a=document.createElement('a');a.href=r.source;a.textContent='Supplier/report link recorded in workbook (price not reverified).';p.append(a);}
+  p.append('Edited or shared costs are user assumptions. Preset references apply only to the dataset defaults. ');
+  for(const item of [r,e])if(item.source){const a=document.createElement('a');a.href='sources.html#source-'+item.id;a.textContent=item.name+' — evidence and conversion. ';p.append(a);}
 }
 function render(){
   annotate();$('status').textContent='';$('share-fallback').hidden=true;
@@ -59,7 +59,7 @@ function draw(s,r){
   $('plot-note').textContent=(s.voltage>max?'Selected voltage is outside the plotted range. ':'')+(r.breakEven!==null&&r.breakEven>max?'Break-even is beyond this range; increase “Plot to” to see the crossing.':'The open circle marks equal cost when a crossing is in view.');
 }
 function rank(s,r){
-  const rows=ENERGY.filter(e=>e.row).map(e=>({e,r:ElectronModel.calculate({...s,tariff:e.tariff})})).sort((a,b)=>a.r.electrical-b.r.electrical);
+  const rows=ENERGY.filter(e=>e.source).map(e=>({e,r:ElectronModel.calculate({...s,tariff:e.tariff})})).sort((a,b)=>a.r.electrical-b.r.electrical);
   $('ranking').replaceChildren(...rows.map(({e,r:rr})=>{
     const tr=document.createElement('tr');
     for(const text of [e.name,number(e.tariff),number(rr.electrical),rr.winner==='equal'?'Equal cost':rr.winner==='electricity'?'Electricity cheaper':'Reagent cheaper']){const td=document.createElement('td');td.textContent=text;tr.append(td);}
@@ -80,7 +80,7 @@ $('export').addEventListener('click',()=>{
   if(!current)return;const {s,r}=current;
   const rows=[['Electron Cost scenario','Value','Unit'],['Reagent',reagent().name,''],['Energy source',energy().name,''],['Original workbook chemistry',s.legacy,''],
     ...numeric.map(k=>[k,s[k],({price:'USD/kg',mass:'g/mol',electrons:'mol e-/mol reagent',utilization:'%',tariff:'USD/kWh',voltage:'V',faradaic:'%',supply:'%',amount:'mol useful e-'})[k]]),
-    ['Chemical cost',r.chemical,'USD/mol useful e-'],['Electricity cost',r.electrical,'USD/mol useful e-'],['Break-even voltage',r.breakEven===null?'No unique crossing':r.breakEven,'V'],['Electrical / chemical ratio',r.ratio===null?'Undefined':r.ratio,''],['Chemical total',r.chemicalTotal,'USD'],['Electricity total',r.electricalTotal,'USD'],['Energy',r.energy,'kWh'],['Faraday constant',ElectronModel.F,'C/mol'],['Price provenance','Undated workbook examples; edited values override presets',''],['Reaction note',reagent().note,'']];
+    ['Chemical cost',r.chemical,'USD/mol useful e-'],['Electricity cost',r.electrical,'USD/mol useful e-'],['Break-even voltage',r.breakEven===null?'No unique crossing':r.breakEven,'V'],['Electrical / chemical ratio',r.ratio===null?'Undefined':r.ratio,''],['Chemical total',r.chemicalTotal,'USD'],['Electricity total',r.electricalTotal,'USD'],['Energy',r.energy,'kWh'],['Faraday constant',ElectronModel.F,'C/mol'],['Price provenance','Dated dataset benchmarks; edited/shared costs are user assumptions',''],['Reagent preset reference',reagent().source||'User input',''],['Electricity preset reference',energy().source||'User input',''],['Reagent price basis',reagent().basis||'User input',''],['Electricity price basis',energy().basis||'User input',''],['Reagent reference period',reagent().period||'User input',''],['Electricity reference period',energy().period||'User input',''],['Reaction note',reagent().note,'']];
   const csv=rows.map(row=>row.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(',')).join('\r\n');
   const url=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='electron-cost-comparison.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('status').textContent='CSV downloaded with inputs, units and calculated results.';
 });
@@ -88,7 +88,7 @@ reset();
 function restore(){
   if(!location.hash.startsWith('#scenario=') && !carriedScenario)return;
   try{
-    const s=location.hash.startsWith('#scenario=') ? JSON.parse(decodeURIComponent(location.hash.slice(10))) : carriedScenario;
+    const s=location.hash.startsWith('#scenario=') ? ScenarioNav.read() : carriedScenario;
     if(!REAGENTS.some(r=>r.id===s.reagent)||!ENERGY.some(e=>e.id===s.energy)||typeof s.legacy!=='boolean')throw new Error();
     ElectronModel.calculate(s);
     if(!Number.isFinite(s.plotMax)||s.plotMax<=0)throw new Error();

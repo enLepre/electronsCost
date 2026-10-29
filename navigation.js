@@ -2,6 +2,13 @@
 // Carry full input values between pages, including edited custom scenarios.
 const ScenarioNav = (() => {
   let last = null;
+  function normalize(s) {
+    if(!s)return s;
+    s={...s};
+    if(RETIRED_SOURCES.some(r=>r.category==='Reagent'&&r.id===s.reagent))s.reagent='custom';
+    if(RETIRED_SOURCES.some(r=>r.category==='Electricity'&&r.id===s.energy))s.energy='custom';
+    return s;
+  }
   function valid(s) {
     if(!s || !REAGENTS.some(r=>r.id===s.reagent) || !ENERGY.some(e=>e.id===s.energy) || typeof s.legacy!=='boolean' || !Number.isFinite(s.plotMax) || s.plotMax<=0) return false;
     try{return Object.values(ElectronModel.calculate(s)).every(v=>typeof v!=='number'||Number.isFinite(v));}catch{return false;}
@@ -9,10 +16,10 @@ const ScenarioNav = (() => {
   function read() {
     try {
       if(location.hash.startsWith('#scenario=')) {
-        const s=JSON.parse(decodeURIComponent(location.hash.slice(10)));
+        const s=normalize(JSON.parse(decodeURIComponent(location.hash.slice(10))));
         return valid(s)?s:null;
       }
-      const s=JSON.parse(sessionStorage.getItem('electron-cost-scenario'));
+      const s=normalize(JSON.parse(sessionStorage.getItem('electron-cost-scenario')));
       return valid(s)?s:null;
     }catch{return null;}
   }

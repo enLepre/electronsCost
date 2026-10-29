@@ -12,13 +12,13 @@ The website has four pages, linked by the top navigation:
 - **Details:** editable assumptions, efficiencies, plot range, full numerical results, electricity rankings, share links and CSV export. Choosing a custom source opens this editor.
 - **Assumptions:** equations, chemistry basis, original workbook notes, limitations and reference links.
 - The derivation uses LaTeX syntax, defines symbols at first use, and ends with a compact Symbol–Quantity–Unit reference table.
-- **Sources:** all 10 reagent and 13 electricity preset prices, their units and workbook cells, the five reagent links supplied in the workbook, missing-source labels, reaction inputs, and conversion references. It reads the same data as the calculator. No undated example is presented as a verified current price.
+- **Sources:** searchable evidence table with category/status filters, original reported values, units, periods, regions, cost basis, linked references and explicit conversions. Reads directly from calculator data.
 
 The GitHub repository link sits in the footer of every page. A moon/sun icon toggles the theme, with an accessible action label and a saved preference.
 
 Valid scenarios carry between pages via URL fragments and tab-local session storage. A new tab without a shared scenario starts with empty selectors. The slider uses the voltage range from Details (5 V initially), extended if needed to include the selected voltage.
 
-- Ten workbook reagent scenarios plus custom inputs, and thirteen electricity scenarios plus a custom tariff.
+- Seven referenced reagent scenarios and eight referenced electricity scenarios, plus custom inputs. Nine unsupported workbook entries are listed as unavailable and excluded from new selections.
 - Editable full cell voltage, mass price, molar mass, electron equivalents, reagent utilization, Faradaic efficiency, and power supply efficiency.
 - Live winner, relative cost, break-even voltage, voltage plot, source ranking, and batch totals.
 - Scenario sharing, CSV download, responsive layout, keyboard controls, and light/dark themes.
@@ -35,24 +35,26 @@ This does not assess reaction feasibility, kinetics, paired electrode reactions,
 
 ## Workbook provenance
 
-Data are transcribed from the user-provided `Cost of electricity.xlsx`, Chemical rows 3–12 and Electricity rows 3–22. The workbook itself is not included. `data.js` retains original row numbers and supplied price-source URLs. These are undated illustrative prices, not current verified quotations. The workbook marks LCOE/VALCOE as AI-generated estimates; Sudan is also unverified. Generation cost is not necessarily a delivered tariff.
+Prices were replaced on 2026-10-29 with dated IRENA, EIA, Eurostat, Lazard, research-paper and supplier-catalogue evidence. `data.js` contains reported values, normalization, price basis, dates and direct references. Published ranges use an explicitly derived arithmetic midpoint, not a claimed observed mean. Production costs, LCOE, delivered tariffs and catalogue prices are distinct; no inflation harmonization is applied. EU currency conversion uses the Federal Reserve 2024 annual USD/EUR average. Supplier prices are snapshots, not literature findings or live quotes.
+
+Unsupported workbook costs are not used in new calculations. Old shared scenarios retain explicit inputs; retired IDs become custom. Existing saved or edited numbers are not automatically replaced. Select a preset again to load its new default. The workbook remains only the historical origin of the interface and rounded chemistry inputs.
 
 Corrections are explicit in the interface:
 
 - O₂ molar mass: 31.9988 g/mol, replacing 16 g/mol with the four-electron water pathway. [NIST molecular data](https://webbook.nist.gov/cgi/cbook.cgi?ID=C7782447).
 - NH₃ to N₂: 3 e⁻ per NH₃ (2 NH₃ → N₂ + 6 H⁺ + 6 e⁻), replacing the workbook's 6 per molecule. Other nitrogen products require their own stoichiometry.
 - Borohydride is labelled sodium borohydride because the workbook's 37.83 g/mol corresponds to NaBH₄. Eight equivalents is an ideal complete-utilization basis.
-- Adiponitrile retains the workbook's unverified 6 e⁻ with an explicit reaction-unspecified note.
+- Adiponitrile is excluded from new presets because its reaction and price are unverified.
 - “Original workbook chemistry” restores oxygen/ammonia inputs. It does not reproduce lookup errors, drifting kWh conversions, or the rounded Faraday constant.
 - Every kWh is exactly 3,600,000 J; [NIST constants](https://physics.nist.gov/cuu/Constants/) provide the Faraday basis.
 
-Selecting another reagent or switching chemistry mode reloads that preset's price, molar mass, and electron count. Efficiencies stay unchanged. Ranking uses original source tariffs; an edited tariff is used in the main comparison.
+Selecting another reagent or switching chemistry mode reloads that preset's price, molar mass, and electron count. Efficiencies stay unchanged. Ranking uses referenced default costs; an edited tariff is used in the main comparison.
 
 ## Verification
 
 Run `node --test model.test.cjs interface.test.cjs`. Tests cover independently calculated hydrogen costs, break-even inversion, efficiency and scale factors, zero-price cases, invalid inputs, and oxygen/ammonia corrections. A DOM-free interaction harness checks the empty initial state, source selection, slider updates, scenario persistence, shared custom inputs, invalid links and multi-page deployment assets.
 
-The interface passes all thirteen numerical and interaction-state checks, including source coverage and theme switching. Browser preview was blocked by the development environment's security policy, so visual layout, direct graph dragging and clipboard/download behaviour have not been verified in a browser. The interaction harness does not replace browser rendering checks.
+The interface passes the numerical and interaction-state checks, including source coverage and theme switching. Browser preview was blocked by the development environment's security policy, so visual layout, direct graph dragging and clipboard/download behaviour have not been verified in a browser. The interaction harness does not replace browser rendering checks.
 
 ## GitHub Pages
 

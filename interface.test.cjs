@@ -25,7 +25,7 @@ test('initial view has no chosen sources or fabricated prices',()=>{
 });
 test('each choice reveals only its own price; slider changes the winner and graph',()=>{
   const b=boot();b.change('reagent','h2-grey');assert.equal(b.get('chemical-price').children[1].textContent,'USD / e⁻');assert.equal(b.get('energy-price').children.length,0);assert.equal(b.get('graph-area').hidden,true);
-  b.change('energy','eu');assert.equal(b.get('energy-price').children[0].textContent,'0.3');assert.equal(b.get('voltage-slider').disabled,false);assert.equal(b.get('comparison-status').textContent,'The chemical reagent is cheaper.');
+  b.change('energy','eu');assert.equal(b.get('energy-price').children[0].textContent,'0.3108');assert.equal(b.get('voltage-slider').disabled,false);assert.equal(b.get('comparison-status').textContent,'The chemical reagent is cheaper.');
   const previous=b.get('comparison-chart').innerHTML;b.change('voltage-slider','0.01','input');assert.equal(b.get('comparison-status').textContent,'Electricity is cheaper.');assert.notEqual(b.get('comparison-chart').innerHTML,previous);
   const stored=JSON.parse(b.storage.get('electron-cost-scenario'));assert.equal(stored.voltage,.01);
   const restored=boot(stored);assert.equal(restored.get('reagent').value,'h2-grey');assert.equal(restored.get('energy').value,'eu');assert.equal(restored.get('voltage-value').textContent,'0.01 V');
@@ -44,7 +44,7 @@ test('all four pages and their scripts are included in deployment',()=>{
     assert.ok(workflow.includes(page));const html=fs.readFileSync(page,'utf8');assert.ok(!html.includes('Enrico Lepre'));
     for(const [,file] of html.matchAll(/<script defer src="([^"]+)"/g)){
       if(file==='https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.js'){assert.ok(html.includes('sha384-a1WQdjRj162i159OYq041X6I4K8NenkrI09LlPmiHg0YOb7CR+wJOraXwK9abpnE'));continue;}
-      assert.ok(fs.existsSync(file));assert.ok(workflow.includes(file));
+      const asset=file.split('?')[0];assert.ok(fs.existsSync(asset));assert.ok(workflow.includes(asset));
     }
     const header=html.match(/<header[\s\S]*?<\/header>/)[0];
     assert.ok(header.includes('sources.html'));assert.ok(!header.includes('github.com'));
@@ -58,14 +58,32 @@ test('theme icon retains accessible action labels and toggles both ways',()=>{
   theme.listeners.click();assert.equal(theme.attributes['aria-label'],'Switch to light mode');assert.equal(theme.attributes['aria-pressed'],'true');
   theme.listeners.click();assert.equal(theme.attributes['aria-label'],'Switch to dark mode');assert.equal(theme.attributes['aria-pressed'],'false');
 });
-test('source catalogue covers every preset and distinguishes missing references',()=>{
-  const b=boot();b.context.document.createTextNode=text=>({textContent:text});
-  vm.runInContext(fs.readFileSync('sources.js','utf8'),b.context,{filename:'sources.js'});
-  assert.equal(b.get('reagent-sources').children.length,10);assert.equal(b.get('electricity-sources').children.length,13);
-  const catalogue=JSON.parse(vm.runInContext('JSON.stringify(SourceCatalogue)',b.context));
-  assert.equal(catalogue.reagentRows.filter(r=>r.source).length,5);
-  assert.ok(catalogue.reagentRows.every(r=>r.cell==='Chemical!B'+r.row));
-  assert.ok(catalogue.energyRows.every(e=>e.cell==='Electricity!C'+e.row&&!e.source));
-  assert.equal(catalogue.reagentRows.find(r=>r.id==='o2').price,.15);
-  assert.equal(catalogue.energyRows.find(e=>e.id==='solar').tariff,.04);
+test('source catalogue has referenced defaults, no retired costs, and working search filters',()=>{
+  const b=boot();vm.runInContext(fs.readFileSync('sources.js','utf8'),b.context);
+  const rows=JSON.parse(vm.runInContext('JSON.stringify(SourceCatalogue.rows)',b.context));
+  assert.equal(rows.filter(r=>r.status==='Referenced').length,15);
+  assert.equal(rows.filter(r=>r.status==='Unavailable').length,9);
+  assert.ok(rows.filter(r=>r.status==='Referenced').every(r=>r.references.length&&r.source.startsWith('https://')&&r.period&&r.reported&&r.conversion));
+  assert.ok(rows.filter(r=>r.status==='Unavailable').every(r=>r.value===undefined));
+  assert.equal(rows.find(r=>r.id==='solar').value,.043);
+  assert.equal(rows.find(r=>r.id==='bh4-lab').value,265/.5);
+  assert.equal(rows.find(r=>r.id==='li').value,101.5/.025);
+  assert.equal(rows.find(r=>r.id==='eu').value,.2872*1.082);
+  assert.equal(rows.find(r=>r.id==='gas').value,(48+109)/2/1000);
+  b.change('source-search',' IRENA 2024 ','input');assert.equal(b.get('source-rows').children.length,2);
+  b.change('source-kind','Reagent');assert.equal(b.get('source-rows').children.length,0);assert.equal(b.get('source-empty').hidden,false);
+  b.change('source-search','','input');b.change('source-status','Unavailable');assert.equal(b.get('source-rows').children.length,3);
+  b.change('source-kind','');b.change('source-status','');assert.equal(b.get('source-rows').children.length,24);
+});
+test('retired shared presets restore as custom without changing the numbers',()=>{
+ const s={reagent:'adn',energy:'sudan',price:.6,mass:108.14,electrons:6,utilization:100,tariff:.008,voltage:1,faradaic:100,supply:100,amount:1,legacy:false,plotMax:5};
+ const b=boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s)));
+ const saved=JSON.parse(b.storage.get('electron-cost-scenario'));
+ assert.equal(saved.reagent,'custom');assert.equal(saved.energy,'custom');assert.equal(saved.price,.6);assert.equal(saved.tariff,.008);
+ assert.equal(b.get('reagent').children.some(o=>o.value==='adn'),false);
+});
+test('choosing custom electricity fills the other side with current sourced defaults',()=>{
+ const b=boot();b.change('energy','custom');
+ const saved=JSON.parse(b.storage.get('electron-cost-scenario'));
+ assert.equal(saved.reagent,'h2-grey');assert.equal(saved.price,1.5);assert.equal(saved.tariff,.1);
 });
