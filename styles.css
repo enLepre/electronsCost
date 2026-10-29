@@ -58,17 +58,20 @@
 .source-facts{display:grid;grid-template-columns:190px 1fr;gap:8px 20px;font-size:14px;line-height:1.5;margin:5px 0 16px}
 .source-facts dt{color:var(--muted)}.source-facts dd{margin:0;overflow-wrap:anywhere}
 .source-entry .source-reference{color:var(--ink)}
-.derivation{max-width:660px;padding:52px 0 40px}
+.shell.derivation{width:min(660px,calc(100% - 48px));max-width:none;margin-left:auto;margin-right:auto;padding:52px 0 40px}
+.derivation>article{width:100%;margin-inline:auto}
 .support-page .derivation h1{font-size:clamp(36px,5vw,48px);letter-spacing:-.035em;line-height:1.15;margin:0 0 14px}
 .derivation-lead{color:var(--muted);font-size:18px;margin-bottom:36px}
 .derivation section{margin-top:42px}
 .derivation h2{font-size:20px;font-weight:700;margin:0 0 14px}
 .derivation p{font-size:16px;line-height:1.95;margin:16px 0}
 .derivation .derivation-note{font-size:14px;line-height:1.9;color:var(--muted)}
-.definition-table{overflow-x:auto}
-.derivation table{font-size:14px;line-height:1.8}.derivation th{position:static}
-.derivation td,.derivation th{text-align:left!important;padding:12px 12px 12px 0;white-space:normal!important}
-.derivation th[scope=row]{color:var(--ink);width:64px}
+.definition-table{overflow-x:auto;max-width:520px;margin-inline:auto}
+.derivation table{width:100%;table-layout:fixed;font-size:14px;line-height:1.8}.derivation th{position:static}
+.definition-table .quantity-column{width:56%}.definition-table .symbol-column{width:14%}.definition-table .unit-column{width:30%}
+.derivation td,.derivation th{text-align:left!important;padding:12px 10px 12px 0;white-space:normal!important;vertical-align:middle}
+.derivation th[scope=row]{color:var(--ink);width:auto;font-weight:400}
+.definition-table td:nth-child(2),.definition-table th:nth-child(2){text-align:center!important}
 .derivation td:last-child{white-space:nowrap!important}
 .derivation math{font-family:'Cambria Math','STIX Two Math','Times New Roman',serif;font-size:1.08em;color:var(--ink)}
 .derivation-equation{display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center;gap:14px;margin:28px 0}
