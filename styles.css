@@ -85,7 +85,7 @@
 .equation-number{font-size:15px;text-align:right;color:var(--muted)}
 .derivation-assumptions{border-top:1px solid var(--line);padding-top:26px}
 .derivation-assumptions h2:not(:first-child){margin-top:28px}
-.reaction-lines p{font-size:18px}.reaction-lines span{display:block;color:var(--muted);font-size:14px;margin-top:3px}
+.reaction-lines p{font-size:18px}.reaction-lines p > span:not(.tex-math){display:block;color:var(--muted);font-size:14px;margin-top:3px}
 @media(max-width:680px){.derivation{padding-top:36px}.derivation-equation{gap:8px;grid-template-columns:minmax(0,1fr) 26px}.math-scroll math{font-size:19px}.derivation td{font-size:13px}}
 @media(max-width:680px){.source-heading{flex-direction:column;gap:0;margin-bottom:15px}.source-heading h3{margin-bottom:6px}.source-facts{grid-template-columns:125px 1fr;gap:8px 14px}.source-sections{gap:16px}.simple-header nav{gap:14px}}
 @media(max-width:680px){
