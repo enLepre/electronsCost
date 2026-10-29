@@ -25,7 +25,7 @@ jobs:
       - name: Prepare static files
         run: |
           mkdir public
-          cp index.html details.html assumptions.html sources.html styles.css model.js data.js app.js compare.js navigation.js sources.js public/
+          cp index.html details.html assumptions.html sources.html styles.css model.js data.js app.js compare.js navigation.js sources.js math-render.js public/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -42,7 +42,10 @@ test('all four pages and their scripts are included in deployment',()=>{
   const workflow=fs.readFileSync('.github/workflows/pages.yml','utf8');
   for(const page of ['index.html','details.html','assumptions.html','sources.html']){
     assert.ok(workflow.includes(page));const html=fs.readFileSync(page,'utf8');assert.ok(!html.includes('Enrico Lepre'));
-    for(const [,file] of html.matchAll(/<script defer src="([^"]+)"/g)){assert.ok(fs.existsSync(file));assert.ok(workflow.includes(file));}
+    for(const [,file] of html.matchAll(/<script defer src="([^"]+)"/g)){
+      if(file==='https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.js'){assert.ok(html.includes('sha384-a1WQdjRj162i159OYq041X6I4K8NenkrI09LlPmiHg0YOb7CR+wJOraXwK9abpnE'));continue;}
+      assert.ok(fs.existsSync(file));assert.ok(workflow.includes(file));
+    }
     const header=html.match(/<header[\s\S]*?<\/header>/)[0];
     assert.ok(header.includes('sources.html'));assert.ok(!header.includes('github.com'));
     assert.ok(html.match(/<footer[\s\S]*?github.com[\s\S]*?<\/footer>/));

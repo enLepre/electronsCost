@@ -2,7 +2,7 @@
 
 A small, dependency-free HTML tool comparing chemical reagent costs with electrical energy costs per mole of useful electron equivalents. Visual styling follows enLepre's personal website and CitationNetwork: Georgia, warm paper, ink, fine rules, and restrained teal/plum chart accents.
 
-Open `index.html` directly for offline calculations, or serve this directory over HTTP. No build, account, external scripts, or API keys are required. Shared links work for anyone who can access the same hosted page. The URL fragment stores the scenario; inputs are not uploaded. CSV export includes the complete input basis and outputs.
+Open `index.html` directly for offline calculations, or serve this directory over HTTP. No build, account or API keys are required. The Assumptions page loads pinned KaTeX 0.19.1 scripts, styles and fonts from jsDelivr for LaTeX-style typesetting; scripts and styles use integrity checks. Readable equation fallbacks remain if that service is unavailable. The calculator itself has no external dependencies. Shared links work for anyone who can access the same hosted page. The URL fragment stores the scenario; inputs are not uploaded. CSV export includes the complete input basis and outputs.
 
 ## Features
 
@@ -11,6 +11,7 @@ The website has four pages, linked by the top navigation:
 - **Compare:** a centered question, two initially empty source selectors, one price per selected source, and a voltage slider linked to the graph. Reagent prices and graph values are shown in USD per individual electron equivalent (per-mole costs divided by the exact Avogadro constant, 6.02214076 × 10²³ mol⁻¹). Electricity source prices are shown in USD/kWh. The graph marker can also be dragged directly.
 - **Details:** editable assumptions, efficiencies, plot range, full numerical results, electricity rankings, share links and CSV export. Choosing a custom source opens this editor.
 - **Assumptions:** equations, chemistry basis, original workbook notes, limitations and reference links.
+- The derivation uses LaTeX syntax, defines symbols at first use, and ends with a compact Symbol–Quantity–Unit reference table.
 - **Sources:** all 10 reagent and 13 electricity preset prices, their units and workbook cells, the five reagent links supplied in the workbook, missing-source labels, reaction inputs, and conversion references. It reads the same data as the calculator. No undated example is presented as a verified current price.
 
 The GitHub repository link sits in the footer of every page. A moon/sun icon toggles the theme, with an accessible action label and a saved preference.

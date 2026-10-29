@@ -68,15 +68,20 @@
 .derivation .derivation-note{font-size:14px;line-height:1.9;color:var(--muted)}
 .definition-table{overflow-x:auto;max-width:520px;margin-inline:auto}
 .derivation table{width:100%;table-layout:fixed;font-size:14px;line-height:1.8}.derivation th{position:static}
-.definition-table .quantity-column{width:56%}.definition-table .symbol-column{width:14%}.definition-table .unit-column{width:30%}
+.definition-table .quantity-column{width:54%}.definition-table .symbol-column{width:18%}.definition-table .unit-column{width:28%}
 .derivation td,.derivation th{text-align:left!important;padding:12px 10px 12px 0;white-space:normal!important;vertical-align:middle}
 .derivation th[scope=row]{color:var(--ink);width:auto;font-weight:400}
-.definition-table td:nth-child(2),.definition-table th:nth-child(2){text-align:center!important}
+.definition-table th:first-child{text-align:center!important}
 .derivation td:last-child{white-space:nowrap!important}
 .derivation math{font-family:'Cambria Math','STIX Two Math','Times New Roman',serif;font-size:1.08em;color:var(--ink)}
 .derivation-equation{display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center;gap:14px;margin:28px 0}
 .math-scroll{overflow-x:auto;padding:12px 2px}
 .math-scroll math{font-size:22px;margin:0}
+.derivation .katex{font-size:1.08em;color:var(--ink)}
+.math-scroll .katex{font-size:1.22em}
+.math-scroll .katex-display{margin:0;text-align:center}
+.math-scroll .tex-math{display:block}
+.derivation .definition-table .katex{font-size:1em}
 .equation-number{font-size:15px;text-align:right;color:var(--muted)}
 .derivation-assumptions{border-top:1px solid var(--line);padding-top:26px}
 .derivation-assumptions h2:not(:first-child){margin-top:28px}
