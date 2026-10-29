@@ -36,6 +36,29 @@
 .support-page .method{border:0;margin:0;padding-top:50px}
 .support-page h1{font-size:clamp(40px,6vw,64px);margin-bottom:30px}
 .support-page .method>p{max-width:800px}
+.simple-header .theme-toggle{display:grid;place-items:center;width:40px;height:40px;min-width:40px;padding:8px}
+.theme-toggle .theme-sun{display:none}
+:root[data-theme=dark] .theme-toggle .theme-moon{display:none}
+:root[data-theme=dark] .theme-toggle .theme-sun{display:block}
+.repository-footer{justify-content:center;margin-top:32px;padding:20px 0 28px}
+.repository-footer a{text-decoration:none}
+.repository-footer a:hover{text-decoration:underline}
+.sources-page{max-width:1000px}
+.sources-intro{padding:50px 0 32px}
+.sources-intro h1{font-size:clamp(48px,7vw,72px);margin-bottom:20px}
+.sources-page p{font-size:15px;line-height:1.7;color:var(--muted);max-width:850px}
+.sources-page .lead{font-size:25px;color:var(--ink)}
+.source-sections{justify-content:flex-start;flex-wrap:wrap;margin-top:28px;font-size:15px}
+.sources-page>section:not(:first-child){padding:30px 0;border-top:1px solid var(--line);scroll-margin-top:20px}
+.sources-page h2{font-size:30px;margin-bottom:14px}
+.source-entry{border-top:1px solid var(--line);padding:22px 0}
+.source-heading{display:flex;align-items:baseline;justify-content:space-between;gap:20px}
+.source-heading h3{margin:0 0 14px;font-size:22px}
+.source-heading .source-price{color:var(--ink);font-size:20px;white-space:nowrap;margin:0;font-variant-numeric:tabular-nums}
+.source-facts{display:grid;grid-template-columns:190px 1fr;gap:8px 20px;font-size:14px;line-height:1.5;margin:5px 0 16px}
+.source-facts dt{color:var(--muted)}.source-facts dd{margin:0;overflow-wrap:anywhere}
+.source-entry .source-reference{color:var(--ink)}
+@media(max-width:680px){.source-heading{flex-direction:column;gap:0;margin-bottom:15px}.source-heading h3{margin-bottom:6px}.source-facts{grid-template-columns:125px 1fr;gap:8px 14px}.source-sections{gap:16px}.simple-header nav{gap:14px}}
 @media(max-width:680px){
  .simple-header{padding:18px 0}.simple-header nav{gap:20px;font-size:14px;flex-wrap:wrap;padding-bottom:14px}
  .simple-header nav a[aria-current=page]{text-underline-offset:10px}

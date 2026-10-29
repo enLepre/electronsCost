@@ -29,7 +29,11 @@ const ScenarioNav = (() => {
   const page=location.pathname.split('/').pop()||'index.html';
   document.querySelectorAll('[data-scenario-link]').forEach(a=>{if(new URL(a.href,location.href).pathname.endsWith('/'+page))a.setAttribute('aria-current','page');});
   const theme=document.getElementById('theme');
-  function setTheme(dark){document.documentElement.dataset.theme=dark?'dark':'light';theme.textContent=dark?'Light mode':'Dark mode';}
+  function setTheme(dark){
+    document.documentElement.dataset.theme=dark?'dark':'light';
+    const label=dark?'Switch to light mode':'Switch to dark mode';
+    theme.setAttribute('aria-label',label);theme.setAttribute('title',label);theme.setAttribute('aria-pressed',String(dark));
+  }
   theme.addEventListener('click',()=>{const dark=document.documentElement.dataset.theme!=='dark';setTheme(dark);try{localStorage.setItem('electron-cost-theme',dark?'dark':'light');}catch{}});
   try{setTheme(localStorage.getItem('electron-cost-theme')==='dark');}catch{}
   return {read,save,valid};

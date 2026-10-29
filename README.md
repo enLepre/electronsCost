@@ -6,11 +6,14 @@ Open `index.html` directly for offline calculations, or serve this directory ove
 
 ## Features
 
-The website has three pages, linked by the top navigation:
+The website has four pages, linked by the top navigation:
 
 - **Compare:** a centered question, two initially empty source selectors, one price per selected source, and a voltage slider linked to the graph. Reagent prices and graph values are shown in USD per individual electron equivalent (per-mole costs divided by the exact Avogadro constant, 6.02214076 × 10²³ mol⁻¹). Electricity source prices are shown in USD/kWh. The graph marker can also be dragged directly.
 - **Details:** editable assumptions, efficiencies, plot range, full numerical results, electricity rankings, share links and CSV export. Choosing a custom source opens this editor.
 - **Assumptions:** equations, chemistry basis, original workbook notes, limitations and reference links.
+- **Sources:** all 10 reagent and 13 electricity preset prices, their units and workbook cells, the five reagent links supplied in the workbook, missing-source labels, reaction inputs, and conversion references. It reads the same data as the calculator. No undated example is presented as a verified current price.
+
+The GitHub repository link sits in the footer of every page. A moon/sun icon toggles the theme, with an accessible action label and a saved preference.
 
 Valid scenarios carry between pages via URL fragments and tab-local session storage. A new tab without a shared scenario starts with empty selectors. The slider uses the voltage range from Details (5 V initially), extended if needed to include the selected voltage.
 
@@ -48,7 +51,7 @@ Selecting another reagent or switching chemistry mode reloads that preset's pric
 
 Run `node --test model.test.cjs interface.test.cjs`. Tests cover independently calculated hydrogen costs, break-even inversion, efficiency and scale factors, zero-price cases, invalid inputs, and oxygen/ammonia corrections. A DOM-free interaction harness checks the empty initial state, source selection, slider updates, scenario persistence, shared custom inputs, invalid links and multi-page deployment assets.
 
-The simplified interface passes all eleven numerical and interaction-state checks. Browser preview was blocked by the development environment's security policy, so visual layout, direct graph dragging and clipboard/download behaviour have not been verified in a browser. The interaction harness does not replace browser rendering checks.
+The interface passes all thirteen numerical and interaction-state checks, including source coverage and theme switching. Browser preview was blocked by the development environment's security policy, so visual layout, direct graph dragging and clipboard/download behaviour have not been verified in a browser. The interaction harness does not replace browser rendering checks.
 
 ## GitHub Pages
 

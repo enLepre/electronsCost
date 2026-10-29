@@ -38,11 +38,31 @@ test('shared custom input and efficiency values survive navigation',()=>{
 test('invalid shared state leaves the initial selectors empty',()=>{
   const b=boot(null,'#scenario=invalid');assert.equal(b.get('reagent').value,'');assert.equal(b.get('simple-error').hidden,false);assert.equal(b.get('graph-area').hidden,true);
 });
-test('all three pages and their scripts are included in deployment',()=>{
+test('all four pages and their scripts are included in deployment',()=>{
   const workflow=fs.readFileSync('.github/workflows/pages.yml','utf8');
-  for(const page of ['index.html','details.html','assumptions.html']){
+  for(const page of ['index.html','details.html','assumptions.html','sources.html']){
     assert.ok(workflow.includes(page));const html=fs.readFileSync(page,'utf8');assert.ok(!html.includes('Enrico Lepre'));
     for(const [,file] of html.matchAll(/<script defer src="([^"]+)"/g)){assert.ok(fs.existsSync(file));assert.ok(workflow.includes(file));}
+    const header=html.match(/<header[\s\S]*?<\/header>/)[0];
+    assert.ok(header.includes('sources.html'));assert.ok(!header.includes('github.com'));
+    assert.ok(html.match(/<footer[\s\S]*?github.com[\s\S]*?<\/footer>/));
+    assert.ok(header.includes('class="theme-moon"'));assert.ok(header.includes('class="theme-sun"'));
   }
   const home=fs.readFileSync('index.html','utf8');assert.ok(home.includes('<h1>what electron is cheaper?</h1>'));assert.ok(!home.includes('id="inputs"'));assert.ok(!home.includes('id="method"'));
+});
+test('theme icon retains accessible action labels and toggles both ways',()=>{
+  const b=boot();const theme=b.get('theme');assert.equal(theme.attributes['aria-label'],'Switch to dark mode');
+  theme.listeners.click();assert.equal(theme.attributes['aria-label'],'Switch to light mode');assert.equal(theme.attributes['aria-pressed'],'true');
+  theme.listeners.click();assert.equal(theme.attributes['aria-label'],'Switch to dark mode');assert.equal(theme.attributes['aria-pressed'],'false');
+});
+test('source catalogue covers every preset and distinguishes missing references',()=>{
+  const b=boot();b.context.document.createTextNode=text=>({textContent:text});
+  vm.runInContext(fs.readFileSync('sources.js','utf8'),b.context,{filename:'sources.js'});
+  assert.equal(b.get('reagent-sources').children.length,10);assert.equal(b.get('electricity-sources').children.length,13);
+  const catalogue=JSON.parse(vm.runInContext('JSON.stringify(SourceCatalogue)',b.context));
+  assert.equal(catalogue.reagentRows.filter(r=>r.source).length,5);
+  assert.ok(catalogue.reagentRows.every(r=>r.cell==='Chemical!B'+r.row));
+  assert.ok(catalogue.energyRows.every(e=>e.cell==='Electricity!C'+e.row&&!e.source));
+  assert.equal(catalogue.reagentRows.find(r=>r.id==='o2').price,.15);
+  assert.equal(catalogue.energyRows.find(e=>e.id==='solar').tariff,.04);
 });
