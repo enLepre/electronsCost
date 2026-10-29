@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>Electron</title>
+  <circle cx="32" cy="32" r="30" fill="#34312c"/>
+  <g fill="#f5f2ec" font-family="Georgia, 'Times New Roman', serif">
+    <text x="15" y="46" font-size="44" font-style="italic">e</text>
+    <text x="39" y="27" font-size="23">−</text>
+  </g>
+</svg>
