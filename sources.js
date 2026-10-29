@@ -1,17 +1,17 @@
 'use strict';
 // The catalogue and calculator share one source of truth.
 const SourceCatalogue = (() => {
-  const rows=[...REAGENTS.filter(r=>r.source).map(r=>({...r,category:'Reagent',status:'Referenced',value:r.price,unit:'USD/kg'})),...ENERGY.filter(e=>e.source).map(e=>({...e,category:'Electricity',status:'Referenced',value:e.tariff,unit:'USD/kWh'})),...RETIRED_SOURCES];
-  function search(query='',category='',status=''){
+  const rows=[...REAGENTS.filter(r=>r.source).map(r=>({...r,category:'Reagent',status:'Referenced',value:r.price,unit:'USD/kg'})),...ENERGY.filter(e=>e.source).map(e=>({...e,category:'Electricity',status:'Referenced',value:e.tariff,unit:'USD/kWh'}))];
+  function search(query='',category=''){
     const words=query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-    return rows.filter(r=>(!category||r.category===category)&&(!status||r.status===status)&&words.every(w=>JSON.stringify(r).toLocaleLowerCase().includes(w)));
+    return rows.filter(r=>(!category||r.category===category)&&words.every(w=>JSON.stringify(r).toLocaleLowerCase().includes(w)));
   }
   return {rows,search};
 })();
 function sourceElement(tag,text,className){const e=document.createElement(tag);if(text)e.textContent=text;if(className)e.className=className;return e;}
 function renderSources(){
   const get=id=>document.getElementById(id);
-  const rows=SourceCatalogue.search(get('source-search').value,get('source-kind').value,get('source-status').value);
+  const rows=SourceCatalogue.search(get('source-search').value,get('source-kind').value);
   get('source-rows').replaceChildren(...rows.map(r=>{
     const row=sourceElement('tr');row.id='source-'+r.id;
     const name=sourceElement('th');name.setAttribute('scope','row');name.append(sourceElement('strong',r.name),sourceElement('small',r.category+' · '+r.status));
@@ -26,5 +26,5 @@ function renderSources(){
   }));
   get('source-count').textContent=rows.length+' of '+SourceCatalogue.rows.length+' entries';get('source-empty').hidden=rows.length!==0;
 }
-for(const id of ['source-search','source-kind','source-status'])document.getElementById(id).addEventListener(id==='source-search'?'input':'change',renderSources);
+for(const id of ['source-search','source-kind'])document.getElementById(id).addEventListener(id==='source-search'?'input':'change',renderSources);
 renderSources();

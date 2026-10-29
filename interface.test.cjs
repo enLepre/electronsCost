@@ -24,7 +24,7 @@ test('initial view has no chosen sources or fabricated prices',()=>{
   const {get}=boot();assert.equal(get('reagent').value,'');assert.equal(get('energy').value,'');assert.equal(get('chemical-price').children.length,0);assert.equal(get('energy-price').children.length,0);assert.equal(get('voltage-slider').disabled,true);assert.equal(get('graph-area').hidden,true);
 });
 test('each choice reveals only its own price; slider changes the winner and graph',()=>{
-  const b=boot();b.change('reagent','h2-grey');assert.equal(b.get('chemical-price').children[1].textContent,'USD / e⁻');assert.equal(b.get('energy-price').children.length,0);assert.equal(b.get('graph-area').hidden,true);
+  const b=boot();b.change('reagent','h2-grey');assert.equal(b.get('chemical-price').children[1].textContent,'USD / mol e⁻');assert.equal(b.get('energy-price').children.length,0);assert.equal(b.get('graph-area').hidden,true);
   b.change('energy','eu');assert.equal(b.get('energy-price').children[0].textContent,'0.3108');assert.equal(b.get('voltage-slider').disabled,false);assert.equal(b.get('comparison-status').textContent,'The chemical reagent is cheaper.');
   const previous=b.get('comparison-chart').innerHTML;b.change('voltage-slider','0.01','input');assert.equal(b.get('comparison-status').textContent,'Electricity is cheaper.');assert.notEqual(b.get('comparison-chart').innerHTML,previous);
   const stored=JSON.parse(b.storage.get('electron-cost-scenario'));assert.equal(stored.voltage,.01);
@@ -62,7 +62,7 @@ test('source catalogue has referenced defaults, no retired costs, and working se
   const b=boot();vm.runInContext(fs.readFileSync('sources.js','utf8'),b.context);
   const rows=JSON.parse(vm.runInContext('JSON.stringify(SourceCatalogue.rows)',b.context));
   assert.equal(rows.filter(r=>r.status==='Referenced').length,15);
-  assert.equal(rows.filter(r=>r.status==='Unavailable').length,9);
+  assert.equal(rows.filter(r=>r.status==='Unavailable').length,0);
   assert.ok(rows.filter(r=>r.status==='Referenced').every(r=>r.references.length&&r.source.startsWith('https://')&&r.period&&r.reported&&r.conversion));
   assert.ok(rows.filter(r=>r.status==='Unavailable').every(r=>r.value===undefined));
   assert.equal(rows.find(r=>r.id==='solar').value,.043);
@@ -72,8 +72,8 @@ test('source catalogue has referenced defaults, no retired costs, and working se
   assert.equal(rows.find(r=>r.id==='gas').value,(48+109)/2/1000);
   b.change('source-search',' IRENA 2024 ','input');assert.equal(b.get('source-rows').children.length,2);
   b.change('source-kind','Reagent');assert.equal(b.get('source-rows').children.length,0);assert.equal(b.get('source-empty').hidden,false);
-  b.change('source-search','','input');b.change('source-status','Unavailable');assert.equal(b.get('source-rows').children.length,3);
-  b.change('source-kind','');b.change('source-status','');assert.equal(b.get('source-rows').children.length,24);
+  b.change('source-search','','input');assert.equal(b.get('source-rows').children.length,7);
+  b.change('source-kind','');assert.equal(b.get('source-rows').children.length,15);
 });
 test('retired shared presets restore as custom without changing the numbers',()=>{
  const s={reagent:'adn',energy:'sudan',price:.6,mass:108.14,electrons:6,utilization:100,tariff:.008,voltage:1,faradaic:100,supply:100,amount:1,legacy:false,plotMax:5};
@@ -86,4 +86,14 @@ test('choosing custom electricity fills the other side with current sourced defa
  const b=boot();b.change('energy','custom');
  const saved=JSON.parse(b.storage.get('electron-cost-scenario'));
  assert.equal(saved.reagent,'h2-grey');assert.equal(saved.price,1.5);assert.equal(saved.tariff,.1);
+});
+
+test('compare graph and reagent output use costs per mole',()=>{
+ const b=boot();b.change('reagent','h2-grey');b.change('energy','eu');
+ assert.equal(b.get('chemical-price').children[0].textContent,'0.0015');
+ const graph=b.get('comparison-chart').innerHTML;
+ assert.ok(graph.includes('dollars per mole of useful electron equivalents'));
+ assert.ok(graph.includes('0.0015'));
+ assert.ok(!graph.includes('e-27'));
+ assert.ok(fs.readFileSync('index.html','utf8').includes('USD/mol e⁻'));
 });

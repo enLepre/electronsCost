@@ -8,17 +8,17 @@ Open `index.html` directly for offline calculations, or serve this directory ove
 
 The website has four pages, linked by the top navigation:
 
-- **Compare:** a centered question, two initially empty source selectors, one price per selected source, and a voltage slider linked to the graph. Reagent prices and graph values are shown in USD per individual electron equivalent (per-mole costs divided by the exact Avogadro constant, 6.02214076 × 10²³ mol⁻¹). Electricity source prices are shown in USD/kWh. The graph marker can also be dragged directly.
-- **Details:** editable assumptions, efficiencies, plot range, full numerical results, electricity rankings, share links and CSV export. Choosing a custom source opens this editor.
+- **Compare:** a centered question, two initially empty source selectors, one price per selected source, and a voltage slider linked to the graph. Reagent prices and graph values are shown in USD per mole of useful electron equivalents. Electricity source prices are shown in USD/kWh. The graph marker can also be dragged directly.
+- **Details:** two equal input columns for reagent and electricity, followed by full-width results and the final electricity comparison table; editable assumptions, efficiencies, plot range, full numerical results, electricity rankings, share links and CSV export. Choosing a custom source opens this editor.
 - **Assumptions:** equations, chemistry basis, original workbook notes, limitations and reference links.
 - The derivation uses LaTeX syntax, defines symbols at first use, and ends with a compact Symbol–Quantity–Unit reference table.
-- **Sources:** searchable evidence table with category/status filters, original reported values, units, periods, regions, cost basis, linked references and explicit conversions. Reads directly from calculator data.
+- **Sources:** searchable evidence table with category filters, original reported values, units, periods, regions, cost basis, linked references and explicit conversions. Reads directly from calculator data.
 
 The GitHub repository link sits in the footer of every page. A moon/sun icon toggles the theme, with an accessible action label and a saved preference.
 
 Valid scenarios carry between pages via URL fragments and tab-local session storage. A new tab without a shared scenario starts with empty selectors. The slider uses the voltage range from Details (5 V initially), extended if needed to include the selected voltage.
 
-- Seven referenced reagent scenarios and eight referenced electricity scenarios, plus custom inputs. Nine unsupported workbook entries are listed as unavailable and excluded from new selections.
+- Seven referenced reagent scenarios and eight referenced electricity scenarios, plus custom inputs. Unsupported workbook entries are removed from the public dataset.
 - Editable full cell voltage, mass price, molar mass, electron equivalents, reagent utilization, Faradaic efficiency, and power supply efficiency.
 - Live winner, relative cost, break-even voltage, voltage plot, source ranking, and batch totals.
 - Scenario sharing, CSV download, responsive layout, keyboard controls, and light/dark themes.
@@ -37,7 +37,7 @@ This does not assess reaction feasibility, kinetics, paired electrode reactions,
 
 Prices were replaced on 2026-10-29 with dated IRENA, EIA, Eurostat, Lazard, research-paper and supplier-catalogue evidence. `data.js` contains reported values, normalization, price basis, dates and direct references. Published ranges use an explicitly derived arithmetic midpoint, not a claimed observed mean. Production costs, LCOE, delivered tariffs and catalogue prices are distinct; no inflation harmonization is applied. EU currency conversion uses the Federal Reserve 2024 annual USD/EUR average. Supplier prices are snapshots, not literature findings or live quotes.
 
-Unsupported workbook costs are not used in new calculations. Old shared scenarios retain explicit inputs; retired IDs become custom. Existing saved or edited numbers are not automatically replaced. Select a preset again to load its new default. The workbook remains only the historical origin of the interface and rounded chemistry inputs.
+Unsupported workbook records are removed from the public dataset. Old shared scenarios retain explicit inputs; retired IDs become custom. Existing saved or edited numbers are not automatically replaced. Select a preset again to load its new default. The workbook remains only the historical origin of the interface and rounded chemistry inputs.
 
 Corrections are explicit in the interface:
 

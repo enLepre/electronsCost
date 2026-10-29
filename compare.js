@@ -1,6 +1,5 @@
 'use strict';
 const el=id=>document.getElementById(id);
-const AVOGADRO=6.02214076e23;
 const format=(n,digits=4)=>n===0?'0':Math.abs(n)<.0001||Math.abs(n)>=1e6?n.toExponential(3):n.toLocaleString('en-US',{maximumSignificantDigits:digits});
 let scenario=ScenarioNav.read()||{reagent:'',energy:'',price:1,mass:2,electrons:2,utilization:100,tariff:.3,voltage:1,faradaic:100,supply:100,amount:1,legacy:false,plotMax:5};
 for(const [id,items] of [['reagent',REAGENTS],['energy',ENERGY]])for(const item of items){
@@ -22,7 +21,7 @@ function render(){
   slider.setAttribute('aria-valuetext',format(scenario.voltage)+' volts');
   const ready=!!(scenario.reagent&&scenario.energy);
   slider.disabled=!ready;el('graph-area').hidden=!ready;el('simple-error').hidden=true;
-  price('chemical-price',scenario.reagent?scenario.price*scenario.mass/(1000*scenario.electrons*scenario.utilization/100)/AVOGADRO:null,'USD / e⁻');
+  price('chemical-price',scenario.reagent?scenario.price*scenario.mass/(1000*scenario.electrons*scenario.utilization/100):null,'USD / mol e⁻');
   price('energy-price',scenario.energy?scenario.tariff:null,'USD / kWh');
   if(!ready){el('comparison-status').textContent='Choose both sources to compare.';return;}
   try{
@@ -36,10 +35,10 @@ function draw(r,max){
   const left=88,right=22,top=22,bottom=54,w=900,h=330;
   const ymax=Math.max(r.chemical,r.slope*max,1e-12)*1.15;
   const x=v=>left+v/max*(w-left-right),y=c=>h-bottom-c/ymax*(h-top-bottom);
-  let html='<title id="chart-title">Electron cost versus cell voltage</title><desc id="chart-description">At '+format(scenario.voltage)+' volts, electricity costs '+format(r.electrical/AVOGADRO)+' dollars per electron equivalent and the chemical reagent costs '+format(r.chemical/AVOGADRO)+'.</desc>';
+  let html='<title id="chart-title">Electron cost versus cell voltage</title><desc id="chart-description">At '+format(scenario.voltage)+' volts, electricity costs '+format(r.electrical)+' dollars per mole of useful electron equivalents and the chemical reagent costs '+format(r.chemical)+'.</desc>';
   for(let i=0;i<=4;i++){
     const c=ymax*i/4,v=max*i/4;
-    html+='<line class="grid" x1="'+left+'" x2="'+(w-right)+'" y1="'+y(c)+'" y2="'+y(c)+'"/><text x="'+(left-12)+'" y="'+(y(c)+4)+'" text-anchor="end">'+format(c/AVOGADRO,3)+'</text><text x="'+x(v)+'" y="'+(h-bottom+25)+'" text-anchor="middle">'+format(v,3)+'</text>';
+    html+='<line class="grid" x1="'+left+'" x2="'+(w-right)+'" y1="'+y(c)+'" y2="'+y(c)+'"/><text x="'+(left-12)+'" y="'+(y(c)+4)+'" text-anchor="end">'+format(c,3)+'</text><text x="'+x(v)+'" y="'+(h-bottom+25)+'" text-anchor="middle">'+format(v,3)+'</text>';
   }
   html+='<path class="chemical-line" d="M '+x(0)+' '+y(r.chemical)+' L '+x(max)+' '+y(r.chemical)+'"/><path class="electric-line" d="M '+x(0)+' '+y(0)+' L '+x(max)+' '+y(r.slope*max)+'"/>';
   html+='<line class="selection-line" x1="'+x(scenario.voltage)+'" x2="'+x(scenario.voltage)+'" y1="'+top+'" y2="'+(h-bottom)+'"/>';

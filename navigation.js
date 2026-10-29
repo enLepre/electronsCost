@@ -5,8 +5,8 @@ const ScenarioNav = (() => {
   function normalize(s) {
     if(!s)return s;
     s={...s};
-    if(RETIRED_SOURCES.some(r=>r.category==='Reagent'&&r.id===s.reagent))s.reagent='custom';
-    if(RETIRED_SOURCES.some(r=>r.category==='Electricity'&&r.id===s.energy))s.energy='custom';
+    if(['bh4-market','adn','nh3-eu'].includes(s.reagent))s.reagent='custom';
+    if(['industry','solar-value','coal-value','nuclear-value','sudan','nuclear-old'].includes(s.energy))s.energy='custom';
     return s;
   }
   function valid(s) {

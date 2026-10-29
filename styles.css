@@ -111,3 +111,21 @@
 .source-table caption{text-align:left;padding-bottom:12px;color:var(--muted);font-size:13px}
 .source-table tr:target{outline:1px solid var(--ink);outline-offset:3px}
 @media(max-width:680px){.source-controls{grid-template-columns:1fr 1fr;gap:16px}.source-controls>div:first-child{grid-column:1/-1}}
+/* Match the comparison page: two equal input columns, results beneath. */
+.details-page .details-intro{text-align:center;padding:58px 0 40px}
+.details-page .workspace{display:block;border-top:0}
+.details-page #inputs{border:0;padding:0 0 24px}
+.details-page #inputs>.section-head{border-bottom:1px solid var(--line);padding-bottom:14px}
+.detail-choices{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:52px}
+.details-page fieldset{border-bottom:0;margin-top:28px;padding-bottom:8px}
+.details-page fieldset>select{min-height:54px;font-size:17px}
+.details-page .output{border-top:1px solid var(--line);padding:30px 0 20px}
+.details-page .verdict{text-align:center;min-height:0;margin-bottom:28px}
+.details-page .metrics{grid-template-columns:repeat(3,minmax(0,1fr));text-align:center}
+.details-page .metrics>div:last-child{grid-column:auto}
+.details-page .plot-section{max-width:900px;margin:32px auto 0}
+.details-page .method{padding:28px 0;margin-top:20px}
+.details-page .method>h2{font-size:25px}
+.details-page .ranking{margin-top:0}
+.source-controls{grid-template-columns:minmax(250px,2fr) 1fr}
+@media(max-width:680px){.detail-choices{grid-template-columns:1fr;gap:8px}.details-page fieldset+fieldset{border-top:1px solid var(--line);padding-top:24px}.details-page .details-intro{padding:40px 0 26px}.details-page .metrics strong{font-size:22px}.source-controls{grid-template-columns:1fr}.source-controls>div:first-child{grid-column:auto}}
