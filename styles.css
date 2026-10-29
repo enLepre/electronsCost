@@ -4,3 +4,44 @@
 @media(max-width:900px){.workspace{grid-template-columns:310px minmax(0,1fr)}form{padding-right:22px}.output{padding-left:24px}.metrics{grid-template-columns:1fr 1fr}.metrics>div:last-child{grid-column:1/-1}.metrics strong{font-size:26px}.plot-section .section-head{align-items:flex-start;flex-direction:column}.method-grid{gap:32px}}
 @media(max-width:680px){.shell{width:calc(100% - 32px)}header{gap:16px;align-items:flex-start}.brand{font-size:18px;white-space:nowrap}nav{gap:12px;flex-wrap:wrap;justify-content:flex-end;font-size:13px}nav button{min-height:20px;padding:0}.intro{padding:42px 0 32px}.intro-copy br{display:none}.lead{font-size:24px}.workspace{display:flex;flex-direction:column}form{border-right:0;padding-right:0}.output{border-top:1px solid var(--line);padding:26px 0}.verdict{min-height:0}.verdict h2{font-size:32px}.metrics{grid-template-columns:1fr 1fr 1fr;gap:12px}.metrics>div:last-child{grid-column:auto}.metrics strong{font-size:23px}.metrics p{font-size:12px}.method-grid{grid-template-columns:1fr;gap:0}.ranking>.section-head{align-items:flex-start;flex-direction:column;gap:0}.method>h2{font-size:29px}footer{flex-direction:column;gap:8px}.plot-section .section-head{flex-direction:row;align-items:center}.section-head h2{font-size:20px}.actions{gap:20px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* A quiet comparison surface; supporting material lives on separate pages. */
+.simple-header{justify-content:center;padding:22px 0;border-bottom:0}
+.simple-header nav{gap:30px;border-bottom:1px solid var(--line);padding:0 8px 12px;justify-content:center}
+.simple-header nav a[aria-current=page]{text-decoration:underline;text-underline-offset:18px}
+.comparison-shell{max-width:1000px}
+.question{padding:70px 0 56px;text-align:center}
+.question h1{font-size:clamp(48px,7vw,82px);line-height:1.08;margin:0;letter-spacing:-.05em;font-weight:400}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:60px}
+.choice select{font-size:19px;background:transparent;border:0;border-bottom:1px solid var(--control);padding:16px 28px 16px 2px;min-height:58px}
+.choice-price{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:116px;gap:8px;padding:20px 0;font-variant-numeric:tabular-nums}
+.choice-price:empty{visibility:hidden}
+.choice-price strong{font-weight:400;font-size:34px;letter-spacing:-.025em}
+.choice-price small{font-size:14px;color:var(--muted)}
+.chemical-choice .choice-price strong{color:var(--chem)}
+.electricity-choice .choice-price strong{color:var(--electric)}
+.simple-plot{padding:16px 0 48px}
+.voltage-heading{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px}
+.voltage-heading label{font-size:16px;margin:0}
+.voltage-heading output{font-size:22px;font-variant-numeric:tabular-nums}
+#voltage-slider{width:100%;padding:0;border:0;accent-color:var(--electric);cursor:pointer;min-height:30px;background:transparent}
+#voltage-slider:disabled{cursor:default;opacity:.35}
+.comparison-status{text-align:center;font-size:26px;min-height:32px;margin:24px 0;color:var(--ink)}
+.chart-unit{font-size:13px;color:var(--muted);margin:24px 0 5px}
+#comparison-chart{display:block;width:100%;touch-action:pan-y;cursor:crosshair}
+#comparison-chart text{fill:var(--muted);font:13px Georgia,serif}
+.compare-page .legend{justify-content:center;margin-top:8px;font-size:14px}
+.compare-page .legend span:last-child::before{border-top-style:solid}
+#simple-error{color:var(--error);text-align:center;font-size:14px;line-height:1.5}
+.support-page .method{border:0;margin:0;padding-top:50px}
+.support-page h1{font-size:clamp(40px,6vw,64px);margin-bottom:30px}
+.support-page .method>p{max-width:800px}
+@media(max-width:680px){
+ .simple-header{padding:18px 0}.simple-header nav{gap:20px;font-size:14px;flex-wrap:wrap;padding-bottom:14px}
+ .simple-header nav a[aria-current=page]{text-underline-offset:10px}
+ .question{padding:48px 0 34px}.question h1{font-size:clamp(44px,9vw,60px)}
+ .choices{gap:20px}.choice select{font-size:14px;min-height:54px;padding:12px 15px 12px 0}
+ .choice-price{min-height:98px}.choice-price strong{font-size:25px}.choice-price small{font-size:12px}
+ .comparison-status{font-size:23px;margin:18px 0}.simple-plot{padding-top:6px}
+ #comparison-chart text{font-size:16px}.chart-unit{font-size:12px}
+}

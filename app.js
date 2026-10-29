@@ -2,6 +2,7 @@
 const $ = id => document.getElementById(id);
 const numeric = ['price','mass','electrons','utilization','tariff','voltage','faradaic','supply','amount'];
 let current;
+const carriedScenario = ScenarioNav.read();
 const number = (v, digits=4) => !Number.isFinite(v) ? '—' : v === 0 ? '0' : Math.abs(v)<.0001 || Math.abs(v)>=1e6 ? v.toExponential(3) : v.toLocaleString('en-US',{maximumSignificantDigits:digits});
 function state() {
   const s = Object.fromEntries(numeric.map(k=>[k,$(k).value.trim()==='' ? NaN : Number($(k).value)]));
@@ -25,7 +26,7 @@ function render(){
   try{
     const s=state(),r=ElectronModel.calculate(s);
     if(Object.values(r).some(v=>typeof v==='number'&&!Number.isFinite(v)))throw new Error('These inputs exceed the supported numeric range. Use smaller values.');
-    current={s,r};$('error').hidden=true;$('results').hidden=false;
+    current={s,r};ScenarioNav.save(s);$('error').hidden=true;$('results').hidden=false;
     $('at-voltage').textContent=number(s.voltage);
     $('winner').textContent=r.winner==='equal'?'The costs are equal.':r.winner==='electricity'?'Electricity is cheaper.':'The reagent is cheaper.';
     const max=Math.max(r.chemical,r.electrical);
@@ -70,11 +71,9 @@ for(const [id,items] of [['reagent',REAGENTS],['energy',ENERGY]])for(const item 
 $('inputs').addEventListener('submit',e=>e.preventDefault());
 $('inputs').addEventListener('input',e=>{if(e.target.id==='reagent'||e.target.id==='legacy')loadReagent();if(e.target.id==='energy')loadEnergy();render();});
 $('plot-max').addEventListener('input',render);$('reset').addEventListener('click',()=>{history.replaceState(null,'',location.pathname+location.search);reset();});
-$('theme').addEventListener('click',()=>{const dark=document.documentElement.dataset.theme!=='dark';document.documentElement.dataset.theme=dark?'dark':'light';$('theme').textContent=dark?'Light mode':'Dark mode';try{localStorage.setItem('electron-cost-theme',dark?'dark':'light');}catch{}});
-try{if(localStorage.getItem('electron-cost-theme')==='dark')$('theme').click();}catch{}
 $('share').addEventListener('click',async()=>{
   if(!current)return;
-  const url=new URL(location.href);url.hash='scenario='+encodeURIComponent(JSON.stringify(current.s));
+  const url=new URL('index.html',location.href);url.hash='scenario='+encodeURIComponent(JSON.stringify(current.s));
   try{await navigator.clipboard.writeText(url.href);$('status').textContent='Comparison link copied, including all inputs.';}catch{$('share-fallback').hidden=false;$('share-url').value=url.href;$('share-url').select();$('status').textContent='Select and copy the comparison link below.';}
 });
 $('export').addEventListener('click',()=>{
@@ -87,9 +86,9 @@ $('export').addEventListener('click',()=>{
 });
 reset();
 function restore(){
-  if(!location.hash.startsWith('#scenario='))return;
+  if(!location.hash.startsWith('#scenario=') && !carriedScenario)return;
   try{
-    const s=JSON.parse(decodeURIComponent(location.hash.slice(10)));
+    const s=location.hash.startsWith('#scenario=') ? JSON.parse(decodeURIComponent(location.hash.slice(10))) : carriedScenario;
     if(!REAGENTS.some(r=>r.id===s.reagent)||!ENERGY.some(e=>e.id===s.energy)||typeof s.legacy!=='boolean')throw new Error();
     ElectronModel.calculate(s);
     if(!Number.isFinite(s.plotMax)||s.plotMax<=0)throw new Error();

@@ -21,11 +21,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test model.test.cjs
+      - run: node --test model.test.cjs interface.test.cjs
       - name: Prepare static files
         run: |
           mkdir public
-          cp index.html styles.css model.js data.js app.js public/
+          cp index.html details.html assumptions.html styles.css model.js data.js app.js compare.js navigation.js public/
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
