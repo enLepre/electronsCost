@@ -104,7 +104,7 @@ test('all four pages and their scripts are included in deployment',()=>{
       if(file==='https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.js'){assert.ok(html.includes('sha384-a1WQdjRj162i159OYq041X6I4K8NenkrI09LlPmiHg0YOb7CR+wJOraXwK9abpnE'));continue;}
       const asset=file.split('?')[0];assert.ok(fs.existsSync(asset));assert.ok(workflow.includes(asset));
     }
-    const header=html.match(/<nav class="footer-navigation"[\s\S]*?<\/nav>/)[0];
+    const header=html.match(/<nav id="main-menu"[\s\S]*?<\/nav>/)[0];
     assert.ok(header.includes('sources.html'));assert.ok(!header.includes('github.com'));
     assert.ok(html.match(/<footer[\s\S]*?github.com[\s\S]*?<\/footer>/));
     assert.ok(header.includes('class="theme-moon"'));assert.ok(header.includes('class="theme-sun"'));
@@ -257,8 +257,8 @@ test('share previews use a deployed 1200 by 630 image and the visible title and 
 test('rhombus navigation opens, closes, and restores keyboard focus',()=>{
  const handlers={},attributes={};let open=false,focused=false;
  const toggle={setAttribute:(k,v)=>attributes[k]=v,addEventListener:(k,f)=>handlers['toggle:'+k]=f,focus:()=>{focused=true;}};
- const nav={inert:true};
- const menu={querySelector:s=>s==='.menu-toggle'?toggle:nav,classList:{toggle:(k,v)=>open=v,contains:()=>open},contains:target=>target===toggle||target===nav,addEventListener:(k,f)=>handlers[k]=f};
+ const nav={inert:true,getBoundingClientRect:()=>({width:220,height:280})};
+ const menu={style:{setProperty:()=>{}},querySelector:s=>s==='.menu-toggle'?toggle:nav,classList:{toggle:(k,v)=>open=v,contains:()=>open},contains:target=>target===toggle||target===nav,addEventListener:(k,f)=>handlers[k]=f};
  const header={inert:false};let scrolled=false;
  const document={querySelector:s=>s==='.site-header'?header:menu,body:{classList:{toggle:(k,v)=>scrolled=v}},addEventListener:(k,f)=>handlers[k]=f};
  const window={scrollY:0,addEventListener:(k,f)=>handlers[k]=f};
