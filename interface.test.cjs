@@ -240,15 +240,21 @@ test('rhombus navigation opens, closes, and restores keyboard focus',()=>{
  const toggle={setAttribute:(k,v)=>attributes[k]=v,addEventListener:(k,f)=>handlers['toggle:'+k]=f,focus:()=>{focused=true;}};
  const nav={inert:true};
  const menu={querySelector:s=>s==='.menu-toggle'?toggle:nav,classList:{toggle:(k,v)=>open=v,contains:()=>open},contains:target=>target===toggle||target===nav,addEventListener:(k,f)=>handlers[k]=f};
- const document={querySelector:()=>menu,addEventListener:(k,f)=>handlers[k]=f};
- vm.runInNewContext(fs.readFileSync('menu.js','utf8'),{document});
+ const header={inert:false};let scrolled=false;
+ const document={querySelector:s=>s==='.site-header'?header:menu,body:{classList:{toggle:(k,v)=>scrolled=v}},addEventListener:(k,f)=>handlers[k]=f};
+ const window={scrollY:0,addEventListener:(k,f)=>handlers[k]=f};
+ vm.runInNewContext(fs.readFileSync('menu.js','utf8'),{document,window});
  handlers['toggle:click']();assert.equal(open,true);assert.equal(nav.inert,false);assert.equal(attributes['aria-expanded'],'true');
  handlers.keydown({key:'Escape'});assert.equal(open,false);assert.equal(nav.inert,true);assert.equal(focused,true);
  handlers['toggle:click']();handlers.pointerdown({target:{}});assert.equal(open,false);
  handlers['toggle:click']();handlers.focusout({relatedTarget:nav});assert.equal(open,true);
  handlers.focusout({relatedTarget:null});assert.equal(open,false);
+ handlers['toggle:click']();window.scrollY=49;handlers.scroll();assert.equal(scrolled,true);assert.equal(header.inert,true);assert.equal(open,false);assert.equal(nav.inert,true);
+ window.scrollY=48;handlers.scroll();assert.equal(scrolled,false);assert.equal(header.inert,false);
+ window.scrollY=100;handlers.pageshow();assert.equal(scrolled,true);assert.equal(header.inert,true);
+ window.scrollY=0;handlers.pageshow();assert.equal(scrolled,false);assert.equal(header.inert,false);
  for(const page of ['index.html','details.html','assumptions.html','sources.html']){
-  const html=fs.readFileSync(page,'utf8');assert.ok(html.includes('aria-controls="main-menu"'));assert.ok(html.includes('src="menu.js?v=20261118"'));
+  const html=fs.readFileSync(page,'utf8');assert.ok(html.includes('aria-controls="main-menu"'));assert.match(html,/<header class="site-header shell">[\s\S]*?class="menu-outline"[\s\S]*?<\/header>/);assert.ok(html.includes('styles.css?v=20261118-scroll'));assert.ok(html.includes('src="menu.js?v=20261118-scroll"'));
  }
  assert.ok(fs.readFileSync('.github/workflows/pages.yml','utf8').includes('menu.js'));
 });

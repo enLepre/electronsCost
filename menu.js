@@ -20,4 +20,17 @@
   document.addEventListener('pointerdown', event => {
     if (!menu.contains(event.target)) setOpen(false);
   });
+  const header = document.querySelector('.site-header');
+  let lastHidden;
+  const updateScroll = () => {
+    const hidden = window.scrollY > 48;
+    if (hidden === lastHidden) return;
+    lastHidden = hidden;
+    document.body.classList.toggle('is-page-scrolled', hidden);
+    header.inert = hidden;
+    if (hidden) setOpen(false);
+  };
+  window.addEventListener('scroll', updateScroll, { passive: true });
+  window.addEventListener('pageshow', updateScroll);
+  updateScroll();
 })();

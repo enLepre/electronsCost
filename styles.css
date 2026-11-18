@@ -235,3 +235,8 @@ main.shell,main.shell.derivation{width:min(800px,calc(100% - 48px));max-width:80
 .menu nav a[aria-current=page]{font-style:italic}
 @media(max-width:700px){body{padding-top:72px}.site-header{width:calc(100% - 32px);padding:16px 0}main.shell,main.shell.derivation{width:calc(100% - 32px)}}
 @media(prefers-reduced-motion:reduce){.menu-outline,.menu-outline rect,.menu.is-open .menu-outline rect,.menu nav,.menu.is-open nav{transition:none}}
+
+/* Use the personal site's 48px scroll threshold and fade timing. */
+body .site-header{transition:opacity .22s ease,transform .22s ease,visibility .22s}
+body.is-page-scrolled .site-header{opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-50%) translateY(-12px)}
+@media(prefers-reduced-motion:reduce){body .site-header{transition:none}}
