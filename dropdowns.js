@@ -1,6 +1,8 @@
 'use strict';
 // Enhance native selects while retaining their options, values and change events.
 (() => {
+  // Keep the native picker on touch devices, including iPads with a trackpad.
+  if (navigator.maxTouchPoints > 0) return;
   const controls = [];
   for (const id of ['reagent', 'energy']) {
     const select = document.getElementById(id);
