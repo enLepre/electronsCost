@@ -130,3 +130,12 @@ el('download-result').addEventListener('click',async()=>{
   try{await ResultImage.download(snapshot);el('share-status').textContent='Result image downloaded';}
   catch{el('share-status').textContent='Could not download image. Please try again.';}
 });
+
+el('try-example').addEventListener('click',()=>{
+  ScenarioNav.clear();
+  history.replaceState(null,'',location.pathname);
+  scenario={...emptyScenario(),reagent:defaultReagent.id,energy:defaultEnergy.id};
+  el('metric-status').textContent='';
+  el('max-voltage').setAttribute('aria-invalid','false');
+  render();
+});

@@ -297,3 +297,5 @@ body>.repository-footer{flex-shrink:0}
 
 /* Keep the document canvas opaque throughout sequential page fades. */
 html{background:var(--paper)}
+
+.example-footer{text-align:center;flex-shrink:0;padding-top:24px}.example-footer button{font-size:14px;color:var(--muted)}.example-footer button:hover{color:var(--electric)}

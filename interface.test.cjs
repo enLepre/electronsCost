@@ -273,7 +273,7 @@ test('rhombus navigation opens, closes, and restores keyboard focus',()=>{
  window.scrollY=100;handlers.pageshow();assert.equal(scrolled,true);assert.equal(header.inert,true);
  window.scrollY=0;handlers.pageshow();assert.equal(scrolled,false);assert.equal(header.inert,false);
  for(const page of ['index.html','details.html','assumptions.html','sources.html']){
-  const html=fs.readFileSync(page,'utf8');assert.ok(html.includes('aria-controls="main-menu"'));assert.match(html,/<header class="site-header shell">[\s\S]*?class="menu-outline"[\s\S]*?<\/header>/);assert.ok(html.includes('styles.css?v=20261118-theme-fix'));assert.ok(html.includes('src="menu.js?v=20261118-personal-menu"'));
+  const html=fs.readFileSync(page,'utf8');assert.ok(html.includes('aria-controls="main-menu"'));assert.match(html,/<header class="site-header shell">[\s\S]*?class="menu-outline"[\s\S]*?<\/header>/);assert.ok(html.includes('styles.css?v=20261118-example'));assert.ok(html.includes('src="menu.js?v=20261118-personal-menu"'));
  }
  assert.ok(fs.readFileSync('.github/workflows/pages.yml','utf8').includes('menu.js'));
 });
@@ -305,4 +305,11 @@ test('Share offers a selectable link when clipboard access is unavailable',async
  b.get('share-url').focus=()=>{};b.get('share-url').select=()=>{selected=true;};
  await b.get('share-comparison').listeners.click();assert.equal(b.get('share-fallback').hidden,false);assert.equal(selected,true);assert.ok(b.get('share-url').value.includes('#green-hydrogen-vs-solar'));
  b.change('reagent','h2-grey');assert.equal(b.get('share-fallback').hidden,true);
+});
+
+test('Try an example loads a complete comparison and Start over clears it',()=>{
+ const b=boot();assert.equal(b.get('reagent').value,'');assert.equal(b.get('energy').value,'');
+ b.get('try-example').listeners.click();assert.equal(b.get('reagent').value,'h2-green');assert.equal(b.get('energy').value,'solar');assert.equal(b.get('voltage-value').textContent,'1 V');assert.equal(b.get('voltage-comparison').hidden,false);assert.equal(b.get('graph-area').hidden,false);assert.equal(b.get('share-comparison').disabled,false);
+ b.change('voltage-slider','3','input');b.get('try-example').listeners.click();assert.equal(b.get('voltage-value').textContent,'1 V');
+ b.get('start-over').listeners.click();assert.equal(b.get('reagent').value,'');assert.equal(b.get('energy').value,'');assert.equal(b.get('voltage-comparison').hidden,true);
 });
