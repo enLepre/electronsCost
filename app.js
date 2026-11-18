@@ -1,0 +1,90 @@
+'use strict';
+const $ = id => document.getElementById(id);
+const numeric = ['price','mass','electrons','utilization','tariff','voltage','faradaic','supply','amount'];
+let current;
+const carriedScenario = ScenarioNav.read();
+const number = (v, digits=4) => !Number.isFinite(v) ? '—' : v === 0 ? '0' : Math.abs(v)<.0001 || Math.abs(v)>=1e6 ? v.toExponential(3) : v.toLocaleString('en-US',{maximumSignificantDigits:digits});
+function state() {
+  const s = Object.fromEntries(numeric.map(k=>[k,$(k).value.trim()==='' ? NaN : Number($(k).value)]));
+  return {...s,...($('energy').value==='custom'&&$('valcoe').checked?{energyMetric:'valcoe'}:{}),reagent:$('reagent').value,energy:$('energy').value,legacy:$('legacy').checked,plotMax:Number($('plot-max').value)};
+}
+function reagent(){return REAGENTS.find(r=>r.id===$('reagent').value);}
+function energy(){return ENERGY.find(r=>r.id===$('energy').value);}
+function loadReagent(){const r=reagent();$('price').value=r.price;$('mass').value=$('legacy').checked ? r.legacyMass ?? r.mass : r.mass;$('electrons').value=$('legacy').checked ? r.legacyN ?? r.n : r.n;}
+function loadEnergy(){$('tariff').value=energy().tariff;}
+function annotate(){
+  const r=reagent(),e=energy();
+  $('reagent-type').textContent=r.type + (r.source ? ' · '+r.basis+', editable' : '');
+  $('reaction').textContent=($('legacy').checked?'Original workbook chemistry selected. ':'')+r.note;
+  $('energy-note').textContent=e.source ? e.basis+' · '+e.period : 'Enter your delivered electricity price.';
+  const p=$('provenance');p.replaceChildren();
+  p.append('Edited or shared costs are user assumptions. Preset references apply only to the dataset defaults. ');
+  for(const item of [r,e])if(item.source){const a=document.createElement('a');a.href='sources.html#source-'+item.id;a.textContent=item.name+' — evidence and conversion. ';p.append(a);}
+}
+function render(){
+  EnergyChoices.sync(state());annotate();$('status').textContent='';$('share-fallback').hidden=true;
+  try{
+    const s=state(),r=ElectronModel.calculate(s);
+    if(Object.values(r).some(v=>typeof v==='number'&&!Number.isFinite(v)))throw new Error('These inputs exceed the supported numeric range. Use smaller values.');
+    current={s,r};ScenarioNav.save(s);$('error').hidden=true;$('results').hidden=false;
+    $('at-voltage').textContent=number(s.voltage);
+    $('winner').textContent=r.winner==='equal'?'The costs are equal.':r.winner==='electricity'?'Electricity is cheaper.':'The reagent is cheaper.';
+    const max=Math.max(r.chemical,r.electrical);
+    const savings=max ? 100*Math.abs(r.electrical-r.chemical)/max:0;
+    $('difference').textContent=r.winner==='equal'?'Both options have the same cost per useful electron equivalent.':number(savings,3)+'% lower cost than '+(r.winner==='electricity'?'the reagent':'electricity')+'. '+(r.ratio===null?'Electrical / chemical ratio is undefined at zero reagent cost.':'Electrical / chemical cost: '+number(r.ratio)+'×.');
+    $('electrical').textContent=number(r.electrical);$('chemical').textContent=number(r.chemical);
+    $('break-even').textContent=r.breakEven===null?'No crossing':number(r.breakEven)+' V';
+    $('break-note').textContent=r.breakEven===null?(r.chemical===0?'Both costs are zero at every voltage.':'Zero tariff: electricity stays cheaper.'):'Equal cost per mol e⁻';
+    $('scale-label').textContent='For '+number(s.amount)+' mol of useful e⁻';
+    $('scale-value').textContent='Electricity: $'+number(r.electricalTotal)+' · Reagent: $'+number(r.chemicalTotal)+' · Energy: '+number(r.energy)+' kWh';
+    draw(s,r);rank(s,r);
+  }catch(e){current=null;$('error').hidden=false;$('error').textContent=e.message;$('results').hidden=true;$('ranking').replaceChildren();}
+}
+function draw(s,r){
+  const max=s.plotMax;
+  if(!Number.isFinite(max)||max<=0||!Number.isFinite(r.slope*max)){$('chart').replaceChildren();$('plot-note').textContent='Enter a positive, finite plot limit within the supported range.';return;}
+  ElectronChart.draw($('chart'),s,r,max);
+  $('plot-note').textContent=(s.voltage>max?'Selected voltage is outside the plotted range. ':'')+(r.breakEven!==null&&r.breakEven>max?'Break-even is beyond this range; increase “Plot to” to see the crossing.':'The labelled crossing marks equal cost. Dashed line: selected voltage.');
+}
+function rank(s,r){
+  const rows=EnergyChoices.list(EnergyChoices.metric(s)).filter(e=>e.source).map(e=>({e,r:ElectronModel.calculate({...s,tariff:e.tariff})})).sort((a,b)=>a.r.electrical-b.r.electrical);
+  $('ranking').replaceChildren(...rows.map(({e,r:rr})=>{
+    const tr=document.createElement('tr');
+    for(const text of [e.name,number(e.tariff),number(rr.electrical),rr.winner==='equal'?'Equal cost':rr.winner==='electricity'?'Electricity cheaper':'Reagent cheaper']){const td=document.createElement('td');td.textContent=text;tr.append(td);}
+    return tr;
+  }));
+}
+function reset(){ $('inputs').reset();$('reagent').value='h2-grey';EnergyChoices.sync({energy:'eu'});$('metric-status').textContent='';$('plot-max').value=5;loadReagent();loadEnergy();render(); }
+for(const [id,items] of [['reagent',REAGENTS],['energy',ENERGY]])for(const item of items){const o=document.createElement('option');o.value=item.id;o.textContent=item.name;$(id).append(o);}
+$('inputs').addEventListener('submit',e=>e.preventDefault());
+$('inputs').addEventListener('input',e=>{if(e.target.id==='valcoe'){const before=state(),mode=$('valcoe').checked?'valcoe':'lcoe',next=EnergyChoices.switchMetric(before,mode);$('metric-status').textContent=mode==='valcoe'&&before.energy!=='custom'&&!next.energy.startsWith(before.energy+'-')?'This source has no verified VALCOE. Solar PV has been selected.':'';EnergyChoices.sync(next);$('tariff').value=next.tariff;}if(e.target.id==='energy')$('metric-status').textContent='';if(e.target.id==='reagent'||e.target.id==='legacy')loadReagent();if(e.target.id==='energy')loadEnergy();render();});
+$('plot-max').addEventListener('input',render);$('reset-inputs').addEventListener('click',()=>{history.replaceState(null,'',location.pathname+location.search);reset();});
+$('share').addEventListener('click',async()=>{
+  if(!current)return;
+  const url=new URL('index.html',location.href);url.hash='scenario='+encodeURIComponent(JSON.stringify(current.s));
+  try{await navigator.clipboard.writeText(url.href);$('status').textContent='Comparison link copied, including all inputs.';}catch{$('share-fallback').hidden=false;$('share-url').value=url.href;$('share-url').select();$('status').textContent='Select and copy the comparison link below.';}
+});
+$('export').addEventListener('click',()=>{
+  if(!current)return;const {s,r}=current;
+  const rows=[['Electron Cost scenario','Value','Unit'],['Reagent',reagent().name,''],['Energy source',energy().name,''],['Electricity metric',EnergyChoices.metric(s).toUpperCase(),''],['Original workbook chemistry',s.legacy,''],
+    ...numeric.map(k=>[k,s[k],({price:'USD/kg',mass:'g/mol',electrons:'mol e-/mol reagent',utilization:'%',tariff:'USD/kWh',voltage:'V',faradaic:'%',supply:'%',amount:'mol useful e-'})[k]]),
+    ['Chemical cost',r.chemical,'USD/mol useful e-'],['Electricity cost',r.electrical,'USD/mol useful e-'],['Break-even voltage',r.breakEven===null?'No unique crossing':r.breakEven,'V'],['Electrical / chemical ratio',r.ratio===null?'Undefined':r.ratio,''],['Chemical total',r.chemicalTotal,'USD'],['Electricity total',r.electricalTotal,'USD'],['Energy',r.energy,'kWh'],['Faraday constant',ElectronModel.F,'C/mol'],['Price provenance','Dated dataset benchmarks; edited/shared costs are user assumptions',''],['Reagent preset reference',reagent().source||'User input',''],['Electricity preset reference',energy().source||'User input',''],['Reagent price basis',reagent().basis||'User input',''],['Electricity price basis',energy().basis||'User input',''],['Reagent reference period',reagent().period||'User input',''],['Electricity reference period',energy().period||'User input',''],['Reaction note',reagent().note,'']];
+  const csv=rows.map(row=>row.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(',')).join('\r\n');
+  const url=URL.createObjectURL(new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='electron-cost-comparison.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);$('status').textContent='CSV downloaded with inputs, units and calculated results.';
+});
+reset();
+function restore(){
+  if(!location.hash.startsWith('#scenario=') && !carriedScenario)return;
+  try{
+    const s=location.hash.startsWith('#scenario=') ? ScenarioNav.read() : carriedScenario;
+    if(!REAGENTS.some(r=>r.id===s.reagent)||!ENERGY.some(e=>e.id===s.energy)||typeof s.legacy!=='boolean')throw new Error();
+    ElectronModel.calculate(s);
+    if(!Number.isFinite(s.plotMax)||s.plotMax<=0)throw new Error();
+    EnergyChoices.sync(s);$('reagent').value=s.reagent;$('energy').value=s.energy;$('legacy').checked=s.legacy;
+    numeric.forEach(k=>$(k).value=s[k]);$('plot-max').value=s.plotMax;render();
+    $('status').textContent='Shared comparison restored.';
+  }catch{reset();$('status').textContent='This comparison link is invalid. Default inputs are shown.';}
+}
+restore();window.addEventListener('hashchange',restore);
+
+window.addEventListener('resize',()=>{if(current)draw(current.s,current.r);});

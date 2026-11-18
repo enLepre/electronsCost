@@ -1,0 +1,162 @@
+@import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;600&display=swap");
+:root{color-scheme:light;--paper:#f5f2ec;--ink:#34312c;--muted:#70685e;--line:#ded8ce;--control:#b3aa9c;--electric:#007f78;--chem:#875f7b;--shade:#eeebe4;--error:#973d2e}
+:root[data-theme=dark]{color-scheme:dark;--paper:#272c32;--ink:#e0e4e8;--muted:#adb5bf;--line:#414850;--control:#77828e;--electric:#72c9bd;--chem:#d6a9c9;--shade:#30363d;--error:#ffb3a3}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scrollbar-gutter:stable}body{margin:0;background:var(--paper);color:var(--ink);font-family:Georgia,'Times New Roman',serif;-webkit-font-smoothing:antialiased}button,input,select{font:inherit;color:inherit;border-radius:0}a{color:inherit;text-underline-offset:4px}button{cursor:pointer;background:none;border:0;padding:9px 0;min-height:40px}button:hover,a:hover{color:var(--electric)}:focus-visible{outline:2px solid var(--electric);outline-offset:4px}[hidden]{display:none!important}.shell{width:min(1120px,calc(100% - 48px));margin:auto}header{display:flex;justify-content:space-between;align-items:center;padding:24px 0;border-bottom:1px solid var(--line)}.brand{font-size:21px;text-decoration:none}nav{display:flex;align-items:center;gap:24px;font-size:15px}nav a{text-decoration:none}.intro{padding:64px 0 48px}.eyebrow{color:var(--muted);font-size:13px;letter-spacing:.045em;margin:0 0 18px}h1{font-weight:400;letter-spacing:-.055em;font-size:clamp(54px,7vw,82px);line-height:1;margin:0 0 22px}.lead{font-size:28px;margin:0 0 12px}.intro-copy{color:var(--muted);line-height:1.65;font-size:17px;margin:0}h2,h3{font-weight:400}h2{font-size:25px;margin:0}h3{font-size:21px;margin:26px 0 12px}.workspace{display:grid;grid-template-columns:360px minmax(0,1fr);border-top:1px solid var(--line);scroll-margin-top:20px}.section-head{display:flex;justify-content:space-between;align-items:center;gap:16px}.section-head h2{font-size:22px}form{padding:24px 30px 28px 0;border-right:1px solid var(--line)}fieldset{margin:24px 0 0;padding:0 0 22px;border:0;border-bottom:1px solid var(--line);min-width:0}legend{font-size:20px;margin-bottom:20px}legend span{color:var(--muted);font-size:12px;margin-right:12px}label{display:block;font-size:14px;margin:16px 0 7px}label small{display:block;font-size:12px;color:var(--muted);margin-top:5px}input,select{width:100%;border:1px solid var(--control);background:var(--paper);padding:10px;font-size:16px;min-height:42px}input:invalid{border-color:var(--error)}.pair{display:grid;grid-template-columns:1fr 1fr;gap:14px}.caption{font-size:13px;line-height:1.55;color:var(--muted);margin:10px 0}.check{display:flex;gap:9px;align-items:center;line-height:1.45}.check input{width:16px;min-height:18px;accent-color:var(--electric)}details{margin-top:18px}summary{cursor:pointer;font-size:15px;padding:8px 0}.output{padding:28px 0 20px 38px;min-width:0}.verdict{min-height:136px}.verdict h2{font-size:36px;letter-spacing:-.03em;line-height:1.15}.verdict p:last-child{color:var(--muted);line-height:1.5;font-size:16px}.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:22px 0;gap:16px}.metrics p{font-size:14px;margin:0 0 14px}.metrics strong{display:block;font-size:29px;font-weight:400;font-variant-numeric:tabular-nums;white-space:nowrap}.metrics div:first-child strong{color:var(--electric)}.metrics div:nth-child(2) strong{color:var(--chem)}.metrics small{display:block;color:var(--muted);font-size:12px;line-height:1.5;margin-top:8px}.plot-section{margin-top:30px}.range-label{display:flex;gap:7px;align-items:center;margin:0;white-space:nowrap;color:var(--muted);font-size:13px}.range-label input{width:70px;padding:7px;font-size:14px}#chart{width:100%;display:block;overflow:visible}#chart text{fill:var(--muted);font:12px Georgia,serif}.grid{stroke:var(--line);stroke-width:1}.electric-line{stroke:var(--electric);stroke-width:2.5;fill:none}.chemical-line{stroke:var(--chem);stroke-width:2;fill:none}.selection-line{stroke:var(--ink);stroke-dasharray:4 5;opacity:.6}.legend{display:flex;flex-wrap:wrap;gap:15px;font-size:12px;color:var(--muted)}.legend span::before{content:'';display:inline-block;width:16px;border-top:2px solid var(--ink);margin-right:7px;vertical-align:middle}.legend .electric::before{border-color:var(--electric)}.legend .chem::before{border-color:var(--chem)}.legend span:last-child::before{border-top-style:dashed}.scale{display:flex;justify-content:space-between;gap:20px;border-block:1px solid var(--line);padding:18px 0;margin-top:24px;font-size:14px;line-height:1.5}.scale span:last-child{text-align:right}.actions{display:flex;gap:25px;padding-top:16px}.actions button{font-size:15px;border-bottom:1px solid var(--control)}#error{color:var(--error);line-height:1.6}.ranking{border-top:1px solid var(--line);padding:30px 0;margin-top:28px}.table-scroll{overflow:auto;max-height:370px;margin-top:18px}table{width:100%;border-collapse:collapse;font-size:14px;text-align:left}th{position:sticky;top:0;background:var(--paper);font-weight:400;color:var(--muted);font-size:12px}th,td{border-bottom:1px solid var(--line);padding:13px 16px 13px 0}td:not(:first-child),th:not(:first-child){text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}.method{border-top:1px solid var(--line);margin-top:24px;padding:40px 0 56px;scroll-margin-top:24px}.method>h2{font-size:34px;letter-spacing:-.025em}.method-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px}.method p{font-size:15px;line-height:1.75;color:var(--muted)}.method .equation{font-size:19px;color:var(--ink)}footer{border-top:1px solid var(--line);padding:20px 0 30px;display:flex;justify-content:space-between;gap:20px;font-size:13px;color:var(--muted)}.sr-only,.skip:not(:focus){position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}.skip:focus{position:absolute;background:var(--paper);padding:15px;z-index:3}
+@media(max-width:900px){.workspace{grid-template-columns:310px minmax(0,1fr)}form{padding-right:22px}.output{padding-left:24px}.metrics{grid-template-columns:1fr 1fr}.metrics>div:last-child{grid-column:1/-1}.metrics strong{font-size:26px}.plot-section .section-head{align-items:flex-start;flex-direction:column}.method-grid{gap:32px}}
+@media(max-width:680px){.shell{width:calc(100% - 32px)}header{gap:16px;align-items:flex-start}.brand{font-size:18px;white-space:nowrap}nav{gap:12px;flex-wrap:wrap;justify-content:flex-end;font-size:13px}nav button{min-height:20px;padding:0}.intro{padding:42px 0 32px}.intro-copy br{display:none}.lead{font-size:24px}.workspace{display:flex;flex-direction:column}form{border-right:0;padding-right:0}.output{border-top:1px solid var(--line);padding:26px 0}.verdict{min-height:0}.verdict h2{font-size:32px}.metrics{grid-template-columns:1fr 1fr 1fr;gap:12px}.metrics>div:last-child{grid-column:auto}.metrics strong{font-size:23px}.metrics p{font-size:12px}.method-grid{grid-template-columns:1fr;gap:0}.ranking>.section-head{align-items:flex-start;flex-direction:column;gap:0}.method>h2{font-size:29px}footer{flex-direction:column;gap:8px}.plot-section .section-head{flex-direction:row;align-items:center}.section-head h2{font-size:20px}.actions{gap:20px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* A quiet comparison surface; supporting material lives on separate pages. */
+.simple-header{justify-content:center;padding:22px 0;border-bottom:0}
+.simple-header nav{gap:30px;border-bottom:1px solid var(--line);padding:0 8px 12px;justify-content:center}
+.simple-header nav a[aria-current=page]{text-decoration:underline;text-underline-offset:18px}
+.comparison-shell{max-width:1000px}
+.question{padding:70px 0 56px;text-align:center}
+.question h1{font-size:clamp(48px,7vw,82px);line-height:1.08;margin:0;letter-spacing:-.05em;font-weight:400}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:60px}
+.choice select{font-size:19px;background:transparent;border:0;border-bottom:1px solid var(--control);padding:16px 28px 16px 2px;min-height:58px}
+.choice-price{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:116px;gap:8px;padding:20px 0;font-variant-numeric:tabular-nums}
+.choice-price:empty{visibility:hidden}
+.choice-price strong{font-weight:400;font-size:34px;letter-spacing:-.025em}
+.choice-price small{font-size:14px;color:var(--muted)}
+.chemical-choice .choice-price strong{color:var(--chem)}
+.electricity-choice .choice-price strong{color:var(--electric)}
+.simple-plot{padding:16px 0 48px}
+.voltage-heading{display:flex;justify-content:space-between;align-items:center;margin:0 0 8px}
+.voltage-heading label{font-size:16px;margin:0}
+.voltage-heading output{font-size:22px;font-variant-numeric:tabular-nums}
+#voltage-slider{width:100%;padding:0;border:0;accent-color:var(--electric);cursor:pointer;min-height:30px;background:transparent}
+#voltage-slider:disabled{cursor:default;opacity:.35}
+.comparison-status{text-align:center;font-size:26px;min-height:32px;margin:24px 0;color:var(--ink)}
+.chart-unit{font-size:13px;color:var(--muted);margin:24px 0 5px}
+#comparison-chart{display:block;width:100%;touch-action:pan-y;cursor:crosshair}
+#comparison-chart text{fill:var(--muted);font:13px Georgia,serif}
+.compare-page .legend{justify-content:center;margin-top:8px;font-size:14px}
+.compare-page .legend span:last-child::before{border-top-style:solid}
+#simple-error{color:var(--error);text-align:center;font-size:14px;line-height:1.5}
+.support-page .method{border:0;margin:0;padding-top:50px}
+.support-page h1{font-size:clamp(40px,6vw,64px);margin-bottom:30px}
+.support-page .method>p{max-width:800px}
+.simple-header .theme-toggle{display:grid;place-items:center;width:40px;height:40px;min-width:40px;padding:8px}
+.theme-toggle .theme-sun{display:none}
+:root[data-theme=dark] .theme-toggle .theme-moon{display:none}
+:root[data-theme=dark] .theme-toggle .theme-sun{display:block}
+.repository-footer{justify-content:center;flex-direction:row;align-items:center;gap:10px;margin-top:32px;padding:20px 0 28px}
+.repository-footer a{text-decoration:none}
+.repository-footer a:hover{text-decoration:underline}
+.sources-page{max-width:1000px}
+.sources-intro{padding:50px 0 32px}
+.sources-intro h1{font-size:clamp(48px,7vw,72px);margin-bottom:20px}
+.sources-page p{font-size:15px;line-height:1.7;color:var(--muted);max-width:850px}
+.sources-page .lead{font-size:25px;color:var(--ink)}
+.source-sections{justify-content:flex-start;flex-wrap:wrap;margin-top:28px;font-size:15px}
+.sources-page>section:not(:first-child){padding:30px 0;border-top:1px solid var(--line);scroll-margin-top:20px}
+.sources-page h2{font-size:30px;margin-bottom:14px}
+.source-entry{border-top:1px solid var(--line);padding:22px 0}
+.source-heading{display:flex;align-items:baseline;justify-content:space-between;gap:20px}
+.source-heading h3{margin:0 0 14px;font-size:22px}
+.source-heading .source-price{color:var(--ink);font-size:20px;white-space:nowrap;margin:0;font-variant-numeric:tabular-nums}
+.source-facts{display:grid;grid-template-columns:190px 1fr;gap:8px 20px;font-size:14px;line-height:1.5;margin:5px 0 16px}
+.source-facts dt{color:var(--muted)}.source-facts dd{margin:0;overflow-wrap:anywhere}
+.source-entry .source-reference{color:var(--ink)}
+.shell.derivation{width:min(660px,calc(100% - 48px));max-width:none;margin-left:auto;margin-right:auto;padding:52px 0 40px}
+.derivation>article{width:100%;margin-inline:auto}
+.support-page .derivation h1{font-size:clamp(36px,5vw,48px);letter-spacing:-.035em;line-height:1.15;margin:0 0 14px}
+.derivation-lead{color:var(--muted);font-size:18px;margin-bottom:36px}
+.derivation section{margin-top:42px}
+.derivation h2{font-size:20px;font-weight:700;margin:0 0 14px}
+.derivation p{font-size:16px;line-height:1.95;margin:16px 0}
+.derivation .derivation-note{font-size:14px;line-height:1.9;color:var(--muted)}
+.definition-table{overflow-x:auto;max-width:520px;margin-inline:auto}
+.derivation table{width:100%;table-layout:fixed;font-size:14px;line-height:1.8}.derivation th{position:static}
+.definition-table .quantity-column{width:54%}.definition-table .symbol-column{width:18%}.definition-table .unit-column{width:28%}
+.derivation td,.derivation th{text-align:left!important;padding:12px 10px 12px 0;white-space:normal!important;vertical-align:middle}
+.derivation th[scope=row]{color:var(--ink);width:auto;font-weight:400}
+.definition-table th:first-child{text-align:center!important}
+.derivation td:last-child{white-space:nowrap!important}
+.derivation math{font-family:'Cambria Math','STIX Two Math','Times New Roman',serif;font-size:1.08em;color:var(--ink)}
+.derivation-equation{display:grid;grid-template-columns:minmax(0,1fr) 32px;align-items:center;gap:14px;margin:28px 0}
+.math-scroll{overflow-x:auto;padding:12px 2px}
+.math-scroll math{font-size:22px;margin:0}
+.derivation .katex{font-size:1.08em;color:var(--ink)}
+.math-scroll .katex{font-size:1.22em}
+.math-scroll .katex-display{margin:0;text-align:center}
+.math-scroll .tex-math{display:block}
+.derivation .definition-table .katex{font-size:1em}
+.equation-number{font-size:15px;text-align:right;color:var(--muted)}
+.derivation-assumptions{border-top:1px solid var(--line);padding-top:26px}
+.derivation-assumptions h2:not(:first-child){margin-top:28px}
+.reaction-basis p{font-size:18px}.reaction-basis .reaction-note{display:block;color:var(--muted);font-size:14px;margin-top:3px}
+@media(max-width:680px){.derivation{padding-top:36px}.derivation-equation{gap:8px;grid-template-columns:minmax(0,1fr) 26px}.math-scroll math{font-size:19px}.derivation td{font-size:13px}}
+@media(max-width:680px){.source-heading{flex-direction:column;gap:0;margin-bottom:15px}.source-heading h3{margin-bottom:6px}.source-facts{grid-template-columns:125px 1fr;gap:8px 14px}.source-sections{gap:16px}.simple-header nav{gap:14px}}
+@media(max-width:680px){
+ .simple-header{padding:18px 0}.simple-header nav{gap:20px;font-size:14px;flex-wrap:wrap;padding-bottom:14px}
+ .simple-header nav a[aria-current=page]{text-underline-offset:10px}
+ .question{padding:48px 0 34px}.question h1{font-size:clamp(44px,9vw,60px)}
+ .choices{gap:20px}.choice select{font-size:14px;min-height:54px;padding:12px 15px 12px 0}
+ .choice-price{min-height:98px}.choice-price strong{font-size:25px}.choice-price small{font-size:12px}
+ .comparison-status{font-size:23px;margin:18px 0}.simple-plot{padding-top:6px}
+ #comparison-chart text{font-size:16px}.chart-unit{font-size:12px}
+}
+/* Searchable evidence catalogue. Scoped rules preserve equation layout. */
+.source-controls{display:grid;grid-template-columns:minmax(250px,2fr) 1fr 1fr;gap:24px;margin-top:36px}
+.source-controls input,.source-controls select{width:100%;min-height:48px}
+.sources-page .table-scroll{max-height:none;margin:24px 0 48px;overflow:auto}
+.source-table{table-layout:fixed;min-width:900px;line-height:1.6}
+.source-table th,.source-table td{white-space:normal!important;text-align:left!important;vertical-align:top;padding:20px 18px 20px 0;overflow-wrap:anywhere}
+.source-table thead th{font-size:13px;position:static}
+.source-table th:nth-child(1){width:21%}.source-table th:nth-child(2){width:26%}.source-table th:nth-child(3){width:17%}.source-table th:nth-child(4){width:36%}
+.source-table tbody th{position:static;color:var(--ink);font-size:15px;font-weight:normal}
+.source-table small{display:block;font-size:13px;color:var(--muted);margin-top:6px}
+.source-table td>a{display:block;margin-bottom:8px}.source-table td p{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.source-table caption{text-align:left;padding-bottom:12px;color:var(--muted);font-size:13px}
+.source-table tr:target{outline:1px solid var(--ink);outline-offset:3px}
+@media(max-width:680px){.source-controls{grid-template-columns:1fr 1fr;gap:16px}.source-controls>div:first-child{grid-column:1/-1}}
+/* Match the comparison page: two equal input columns, results beneath. */
+.details-page .details-intro{text-align:center;padding:58px 0 40px}
+.details-page .workspace{display:block;border-top:0}
+.details-page #inputs{border:0;padding:0 0 24px}
+.details-page #inputs>.section-head{border-bottom:1px solid var(--line);padding-bottom:14px}
+.detail-choices{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:52px}
+.details-page fieldset{border-bottom:0;margin-top:28px;padding-bottom:8px}
+.details-page fieldset>select{min-height:54px;font-size:17px}
+.details-page .output{border-top:1px solid var(--line);padding:30px 0 20px}
+.details-page .verdict{text-align:center;min-height:0;margin-bottom:28px}
+.details-page .metrics{grid-template-columns:repeat(3,minmax(0,1fr));text-align:center}
+.details-page .metrics>div:last-child{grid-column:auto}
+.details-page .plot-section{max-width:900px;margin:32px auto 0}
+.details-page .method{padding:28px 0;margin-top:20px}
+.details-page .method>h2{font-size:25px}
+.details-page .ranking{margin-top:0}
+.source-controls{grid-template-columns:minmax(250px,2fr) 1fr}
+@media(max-width:680px){.detail-choices{grid-template-columns:1fr;gap:8px}.details-page fieldset+fieldset{border-top:1px solid var(--line);padding-top:24px}.details-page .details-intro{padding:40px 0 26px}.details-page .metrics strong{font-size:22px}.source-controls{grid-template-columns:1fr}.source-controls>div:first-child{grid-column:auto}}
+
+/* Readable comparison typography and compact responsive controls. */
+body{font-family:'Source Serif 4',Georgia,serif;font-variant-numeric:lining-nums tabular-nums}
+h1,.question h1{letter-spacing:-.02em}
+.question{padding:48px 0 28px}
+.subtitle{max-width:650px;margin:18px auto 0;font-size:18px;line-height:1.5;color:var(--muted)}
+.choices{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.choice{min-width:0}.choice-label{font-size:14px;margin:10px 0 0;color:var(--muted)}
+.choice select{font-size:17px}.choice-price{min-height:100px;padding:18px 0 8px}
+.tariff-price{text-align:center;color:var(--muted);font-size:14px;margin:0 0 10px}
+.basis-warning{margin:14px 0 24px;line-height:1.6}
+.voltage-heading{gap:16px;flex-wrap:wrap}.voltage-heading>output{margin-right:auto}
+.voltage-heading .range-label{font-size:14px}.range-label input{font-variant-numeric:tabular-nums}
+.comparison-status{font-size:23px;line-height:1.45}
+.chart-unit{font-size:14px;line-height:1.5}
+#chart text,#comparison-chart text{font:14px 'Source Serif 4',Georgia,serif;fill:var(--muted);font-variant-numeric:tabular-nums}
+#chart .chemical-label,#comparison-chart .chemical-label{fill:var(--chem)}
+#chart .electric-label,#comparison-chart .electric-label{fill:var(--electric)}
+#chart .crossing-label,#comparison-chart .crossing-label{fill:var(--ink);paint-order:stroke;stroke:var(--paper);stroke-width:5px;stroke-linejoin:round}
+@media(max-width:600px){
+ .choices{grid-template-columns:minmax(0,1fr);gap:14px}
+ .question{padding:32px 0 22px}.question h1{font-size:44px}.subtitle{font-size:16px}
+ .choice select{font-size:16px;padding:12px 24px 12px 0}
+ .choice-price{min-height:76px;padding:12px 0 4px}.choice-price strong{font-size:30px}.choice-price small{font-size:14px}
+ .comparison-status{font-size:21px}.chart-unit{font-size:14px}
+}
+
+.electricity-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.electricity-heading label{margin:0}.electricity-heading .metric-toggle{font-size:14px;white-space:nowrap}.metric-toggle input{width:16px;min-height:18px}.electricity-heading{margin:16px 0 7px}#metric-status:empty{display:none}
+
+.reset-row{display:flex;justify-content:flex-end;margin:8px 0 12px}.start-over{font-size:14px;color:var(--muted);border-bottom:1px solid var(--control);padding:6px 0;min-height:40px}.start-over:hover{color:var(--electric)}
