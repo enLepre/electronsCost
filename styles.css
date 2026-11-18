@@ -294,3 +294,6 @@ body>.repository-footer{flex-shrink:0}
 .menu nav .brand{font-size:23px;line-height:1.2;letter-spacing:-.02em;font-style:normal;white-space:nowrap}
 
 .reset-row{align-items:center;flex-wrap:wrap;gap:18px}.reset-row .caption{margin:0}.start-over:disabled{opacity:.5;cursor:default}#share-url{font-size:14px}
+
+/* Keep the document canvas opaque throughout sequential page fades. */
+html{background:var(--paper)}
