@@ -31,10 +31,10 @@ test('readable links reject unknown sources and malformed inputs; old shared lin
 });
 test('result image reports source costs, voltage, efficiencies and zero-cost verdicts',()=>{
  const {ShareLinks,ResultImage}=setup();const words=[];
- const ctx={fillRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},fillText:text=>words.push(text),measureText:text=>({width:text.length*12})};
+ const ctx={fillRect(){},beginPath(){},moveTo(){},lineTo(){},stroke(){},setLineDash(){},arc(){},fill(){},fillText:text=>words.push(text),measureText:text=>({width:text.length*12})};
  const canvas={getContext:()=>ctx};const s=ShareLinks.decode('#lithium-vs-us-grid?v=2.5&u=80');
- ResultImage.draw(canvas,s);assert.equal(canvas.width,1200);assert.equal(canvas.height,630);
- assert.ok(words.includes('4,060 USD / kg'));assert.ok(words.some(text=>text.includes('at 2.5 V')));assert.ok(words.some(text=>text.includes('Utilization 80%')));
+ ResultImage.draw(canvas,s);assert.equal(canvas.width,1200);assert.equal(canvas.height,1050);
+ assert.ok(words.includes('Cell voltage (V)'));assert.ok(words.includes('Reagent'));assert.ok(words.includes('Electricity'));assert.ok(words.includes('4,060 USD / kg'));assert.ok(words.some(text=>text.includes('at 2.5 V')));assert.ok(words.some(text=>text.includes('Utilization 80%')));
  words.length=0;s.voltage=0;ResultImage.draw(canvas,s);assert.ok(words.includes('Electricity has zero cost at 0 V'));
  words.length=0;s.price=0;ResultImage.draw(canvas,s);assert.ok(words.includes('The costs are equal at 0 V'));
 });

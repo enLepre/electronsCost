@@ -7,11 +7,11 @@ const ResultImage = (() => {
     const chemical = REAGENTS.find(item => item.id === s.reagent);
     const energy = ENERGY.find(item => item.id === s.energy);
     if (!chemical || !energy) throw new Error('Choose both sources first.');
-    canvas.width = 1200; canvas.height = 630;
+    canvas.width = 1200; canvas.height = 1050;
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Image downloads are unavailable in this browser.');
     const ink = '#34312c', muted = '#70685e';
-    ctx.fillStyle = '#f5f2ec'; ctx.fillRect(0, 0, 1200, 630);
+    ctx.fillStyle = '#f5f2ec'; ctx.fillRect(0, 0, 1200, 1050);
     function text(value, x, y, size = 24, color = ink, align = 'left') {
       ctx.fillStyle = color; ctx.textAlign = align; ctx.font = size + 'px Georgia, serif';
       ctx.fillText(value, x, y);
@@ -52,8 +52,39 @@ const ResultImage = (() => {
     text(verdict + ' at ' + format(s.voltage) + ' V', 600, 467, 32, ink, 'center');
     text(r.breakEven === null ? 'No unique break-even voltage' : 'Break-even at ' + format(r.breakEven) + ' V', 600, 508, 23, muted, 'center');
     text('Utilization ' + format(s.utilization) + '% · Faradaic efficiency ' + format(s.faradaic) + '% · Power supply ' + format(s.supply) + '%', 600, 549, 18, muted, 'center');
-    text('enlepre.github.io/electronsCost', 60, 598, 19, muted);
-    text((s.legacy ? 'Legacy chemistry · ' : '') + 'Selected inputs' + (EnergyChoices.metric(s)==='valcoe'?' · VALCOE':''), 1140, 598, 18, muted, 'right');
+    // Use the same range, units, nice tick spacing and lines as the live graph.
+    const max = Math.max(s.plotMax, s.voltage, .01);
+    const left=135, right=990, top=625, bottom=915;
+    const peak=Math.max(r.chemical,r.slope*max,1e-12)*1000;
+    const raw=peak/4,power=10**Math.floor(Math.log10(raw));
+    const step=([1,2,2.5,5,10].find(n=>n*power>=raw)||10)*power;
+    const ymax=Math.ceil(peak/step)*step;
+    const x=v=>left+v/max*(right-left),y=c=>bottom-c*1000/ymax*(bottom-top);
+    function stroke(x1,y1,x2,y2,color,width=1){
+      ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();
+    }
+    function dot(cx,cy,color,radius=5){ctx.fillStyle=color;ctx.beginPath();ctx.arc(cx,cy,radius,0,2*Math.PI);ctx.fill();}
+    text('Cost per useful mole of electrons (mUSD/mol e⁻)',60,593,21,muted);
+    for(let i=0;i<=Math.round(ymax/step);i++){
+      const cy=y(i*step/1000);stroke(left,cy,right,cy,'#ded8ce');text(format(i*step,3),left-14,cy+6,18,muted,'right');
+    }
+    for(let i=0;i<=4;i++)text(format(max*i/4,3),x(max*i/4),bottom+30,18,muted,'center');
+    stroke(x(0),y(r.chemical),x(max),y(r.chemical),'#875f7b',3);
+    stroke(x(0),y(0),x(max),y(r.slope*max),'#007f78',3);
+    const cy=y(r.chemical),ey=y(r.slope*max),close=Math.abs(cy-ey)<24;
+    text('Reagent',right+12,cy+(close?(cy>=ey?18:-12):6),19,'#875f7b');
+    text('Electricity',right+12,ey+(close?(cy>=ey?-12:18):6),19,'#007f78');
+    ctx.setLineDash([5,6]);stroke(x(s.voltage),top,x(s.voltage),bottom,ink);ctx.setLineDash([]);
+    dot(x(s.voltage),y(r.chemical),'#875f7b');dot(x(s.voltage),y(r.electrical),'#007f78');
+    if(r.breakEven!==null&&r.breakEven<=max){
+      dot(x(r.breakEven),y(r.chemical),ink,6);
+      const labelX=Math.max(left+125,Math.min(right-125,x(r.breakEven)));
+      text('Break-even '+format(r.breakEven,3)+' V',labelX,Math.max(top+20,y(r.chemical)-18),19,ink,'center');
+    }
+    text('Cell voltage (V)',(left+right)/2,978,21,muted,'center');
+    line(60,993,1140);
+    text('enlepre.github.io/electronsCost', 60, 1020, 19, muted);
+    text((s.legacy ? 'Legacy chemistry · ' : '') + 'Selected inputs' + (EnergyChoices.metric(s)==='valcoe'?' · VALCOE':''), 1140, 1020, 18, muted, 'right');
     return canvas;
   }
   async function download(s) {

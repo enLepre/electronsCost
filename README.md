@@ -88,4 +88,4 @@ All four pages include Open Graph and large-image Twitter metadata pointing to t
 
 Share creates links such as `https://enlepre.github.io/electronsCost/#lithium-vs-us-grid?v=2.5`. Source names identify the presets; optional fields preserve edited prices, efficiencies, voltage, plot range, amount and legacy chemistry. Original `#scenario=` links still open. Default values come from the current source dataset.
 
-Download result image exports a 1200 × 630 PNG containing source names, costs, voltage, the comparison verdict and efficiency assumptions. Attach this image alongside the link when sharing. GitHub Pages remains static: automatic link previews use the general site card, not the selected result. No sharing service or external storage is used.
+Image exports a 1200 × 1050 PNG containing source names, costs, voltage, the comparison verdict, efficiency assumptions and voltage comparison graph. Attach this image alongside the link when sharing. GitHub Pages remains static: automatic link previews use the general site card, not the selected result. No sharing service or external storage is used.
