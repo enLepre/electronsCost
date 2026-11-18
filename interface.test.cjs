@@ -86,7 +86,7 @@ test('all four pages and their scripts are included in deployment',()=>{
       if(file==='https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.js'){assert.ok(html.includes('sha384-a1WQdjRj162i159OYq041X6I4K8NenkrI09LlPmiHg0YOb7CR+wJOraXwK9abpnE'));continue;}
       const asset=file.split('?')[0];assert.ok(fs.existsSync(asset));assert.ok(workflow.includes(asset));
     }
-    const header=html.match(/<header[\s\S]*?<\/header>/)[0];
+    const header=html.match(/<nav class="footer-navigation"[\s\S]*?<\/nav>/)[0];
     assert.ok(header.includes('sources.html'));assert.ok(!header.includes('github.com'));
     assert.ok(html.match(/<footer[\s\S]*?github.com[\s\S]*?<\/footer>/));
     assert.ok(header.includes('class="theme-moon"'));assert.ok(header.includes('class="theme-sun"'));
