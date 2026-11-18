@@ -2,12 +2,13 @@
 const el=id=>document.getElementById(id);
 const format=(n,digits=4)=>n===0?'0':Math.abs(n)<.0001||Math.abs(n)>=1e6?n.toExponential(3):n.toLocaleString('en-US',{maximumSignificantDigits:digits});
 const defaultReagent=REAGENTS.find(r=>r.id==='h2-green'),defaultEnergy=ENERGY.find(e=>e.id==='solar');
-let scenario=ScenarioNav.read()||{reagent:defaultReagent.id,energy:defaultEnergy.id,price:defaultReagent.price,mass:defaultReagent.mass,electrons:defaultReagent.n,utilization:100,tariff:defaultEnergy.tariff,voltage:1,faradaic:100,supply:100,amount:1,legacy:false,plotMax:5};
+let scenario=ScenarioNav.read()||{reagent:'',energy:'',price:defaultReagent.price,mass:defaultReagent.mass,electrons:defaultReagent.n,utilization:100,tariff:defaultEnergy.tariff,voltage:1,faradaic:100,supply:100,amount:1,legacy:false,plotMax:5};
 for(const [id,items] of [['reagent',REAGENTS],['energy',ENERGY]])for(const item of items){
   const option=document.createElement('option');option.value=item.id;option.textContent=item.name;el(id).append(option);
 }
 function price(target,value,unit){
   const output=el(target);output.replaceChildren();
+  output.hidden=value===null;
   if(value===null)return;
   const strong=document.createElement('strong');strong.textContent=format(value);
   const small=document.createElement('small');small.textContent=unit;
@@ -21,10 +22,14 @@ function render(){
   el('voltage-value').textContent=format(scenario.voltage)+' V';
   slider.setAttribute('aria-valuetext',format(scenario.voltage)+' volts');
   const ready=!!(scenario.reagent&&scenario.energy);
+  el('voltage-comparison').hidden=!ready;
+  el('metric-control').hidden=!scenario.energy;
   slider.disabled=!ready;el('graph-area').hidden=!ready;el('simple-error').hidden=true;
   price('chemical-price',scenario.reagent?scenario.price*scenario.mass/(1000*scenario.electrons*scenario.utilization/100):null,'USD / mol e⁻');
-  el('tariff-price').textContent=format(scenario.tariff)+' USD / kWh';
-  if(!ready){el('comparison-status').textContent='Choose both sources to compare.';return;}
+  price('energy-price',scenario.energy?ElectronModel.calculate(scenario).electrical:null,'USD / mol e⁻');
+  el('tariff-price').textContent=scenario.energy?format(scenario.tariff)+' USD / kWh':'';
+  el('tariff-price').hidden=!scenario.energy;
+  if(!ready){el('comparison-status').textContent='';return;}
   try{
     const result=ElectronModel.calculate(scenario);
     if(!ScenarioNav.valid(scenario))throw new Error('Check the inputs on the Details page.');
@@ -57,9 +62,9 @@ el('energy').addEventListener('change',()=>{
 });
 function openCustom(){
   // The detailed editor needs a complete scenario; the unchosen side starts with its documented default.
-  const s={...scenario,reagent:scenario.reagent||'h2-grey',energy:scenario.energy||'eu'};
-  if(!scenario.reagent){const r=REAGENTS.find(r=>r.id==='h2-grey');s.price=r.price;s.mass=r.mass;s.electrons=r.n;}
-  if(!scenario.energy)s.tariff=ENERGY.find(e=>e.id==='eu').tariff;
+  const s={...scenario,reagent:scenario.reagent||defaultReagent.id,energy:scenario.energy||defaultEnergy.id};
+  if(!scenario.reagent){const r=defaultReagent;s.price=r.price;s.mass=r.mass;s.electrons=r.n;}
+  if(!scenario.energy)s.tariff=defaultEnergy.tariff;
   ScenarioNav.save(s);location.href='details.html#scenario='+encodeURIComponent(JSON.stringify(s));
 }
 el('voltage-slider').addEventListener('input',()=>{scenario.voltage=Number(el('voltage-slider').value);render();});

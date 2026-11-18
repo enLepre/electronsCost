@@ -28,8 +28,26 @@ function boot(saved=null,hash='',page='index.html'){
   for(const file of ['model.js','data.js','navigation.js','chart.js',page==='details.html'?'app.js':'compare.js'])vm.runInContext(fs.readFileSync(file,'utf8'),context,{filename:file});
   return {get,storage,context,change:(id,value,event='change')=>{get(id).value=value;get(id).listeners[event]();}};
 }
-test('fresh Compare loads green hydrogen and solar with comparable populated results',()=>{
-  const {get}=boot();assert.equal(get('reagent').value,'h2-green');assert.equal(get('energy').value,'solar');
+function readyBoot(saved=null,hash='',page='index.html'){
+ const b=boot(saved,hash,page);
+ if(page==='index.html'&&!saved&&!hash){b.change('reagent','h2-green');b.change('energy','solar');}
+ return b;
+}
+
+test('fresh Compare reveals costs independently and comparison only after both selections',()=>{
+ for(const first of ['reagent','energy']){
+  const b=boot();assert.equal(b.get('reagent').value,'');assert.equal(b.get('energy').value,'');assert.equal(b.get('voltage-comparison').hidden,true);
+  assert.equal(b.get('chemical-price').hidden,true);assert.equal(b.get('energy-price').hidden,true);assert.equal(b.get('metric-control').hidden,true);
+  b.change(first,first==='reagent'?'h2-green':'solar');
+  assert.equal(b.get(first==='reagent'?'chemical-price':'energy-price').hidden,false);assert.equal(b.get(first==='reagent'?'energy-price':'chemical-price').hidden,true);
+  assert.equal(b.get('voltage-comparison').hidden,true);assert.equal(b.get('comparison-status').textContent,'');assert.equal(b.storage.has('electron-cost-scenario'),false);
+  b.change(first==='reagent'?'energy':'reagent',first==='reagent'?'solar':'h2-green');assert.equal(b.get('voltage-comparison').hidden,false);assert.equal(b.get('graph-area').hidden,false);
+ }
+ const html=fs.readFileSync('index.html','utf8');assert.ok(html.indexOf('id="comparison-status"')<html.indexOf('class="voltage-heading"'));assert.ok(html.indexOf('id="voltage-slider"')<html.indexOf('id="graph-area"'));assert.ok(!html.includes('id="metric-note"'));
+});
+
+test('selected green hydrogen and solar show comparable populated results',()=>{
+  const {get}=readyBoot();assert.equal(get('reagent').value,'h2-green');assert.equal(get('energy').value,'solar');
   for(const id of ['chemical-price','energy-price'])assert.equal(get(id).children[1].textContent,'USD / mol e⁻');
   assert.equal(get('chemical-price').children[0].textContent,'0.005');assert.equal(get('energy-price').children[0].textContent,'0.001152');
   assert.equal(get('tariff-price').textContent,'0.043 USD / kWh');assert.equal(get('voltage-slider').disabled,false);assert.equal(get('graph-area').hidden,false);
@@ -37,7 +55,7 @@ test('fresh Compare loads green hydrogen and solar with comparable populated res
   assert.ok(!fs.readFileSync('index.html','utf8').includes('basis-warning')); 
 });
 test('source choices and voltage change result and preserve scenario',()=>{
-  const b=boot();b.change('reagent','h2-grey');b.change('energy','eu');
+  const b=readyBoot();b.change('reagent','h2-grey');b.change('energy','eu');
   assert.match(b.get('comparison-status').textContent,/chemical reagent.*cheaper/);
   const previous=b.get('comparison-chart').innerHTML;b.change('voltage-slider','0.01','input');
   assert.match(b.get('comparison-status').textContent,/Electricity.*cheaper/);assert.notEqual(b.get('comparison-chart').innerHTML,previous);
@@ -58,12 +76,12 @@ test('Details restores edited shared scenarios after initializing defaults',()=>
   assert.deepEqual(JSON.parse(b.storage.get('electron-cost-scenario')),s);
 });
 test('max V updates and clamps voltage; invalid ranges do not corrupt the scenario',()=>{
-  const b=boot();b.change('max-voltage','0.5','input');assert.equal(b.get('voltage-slider').max,.5);assert.equal(b.get('voltage-value').textContent,'0.5 V');
+  const b=readyBoot();b.change('max-voltage','0.5','input');assert.equal(b.get('voltage-slider').max,.5);assert.equal(b.get('voltage-value').textContent,'0.5 V');
   b.change('max-voltage','','input');assert.equal(b.get('simple-error').hidden,false);assert.equal(JSON.parse(b.storage.get('electron-cost-scenario')).plotMax,.5);
   b.change('max-voltage','10','input');assert.equal(b.get('simple-error').hidden,true);assert.equal(b.get('voltage-slider').max,10);
 });
 test('zero-cost comparisons avoid infinite ratios and label zero crossings',()=>{
-  const b=boot();b.change('voltage-slider','0','input');assert.match(b.get('comparison-status').textContent,/Electricity has zero cost/);
+  const b=readyBoot();b.change('voltage-slider','0','input');assert.match(b.get('comparison-status').textContent,/Electricity has zero cost/);
   const s=JSON.parse(b.storage.get('electron-cost-scenario'));s.tariff=0;
   assert.match(boot(s).get('comparison-status').textContent,/no unique break-even/);
   s.price=0;s.tariff=.043;s.voltage=1;
@@ -76,7 +94,7 @@ test('shared custom input and efficiency values survive navigation',()=>{
   assert.equal(b.get('tariff-price').textContent,'0.22 USD / kWh');assert.equal(b.get('voltage-slider').max,10);assert.deepEqual(JSON.parse(b.storage.get('electron-cost-scenario')),s);
 });
 test('invalid shared state shows useful defaults and an error',()=>{
-  const b=boot(null,'#scenario=invalid');assert.equal(b.get('reagent').value,'h2-green');assert.equal(b.get('simple-error').hidden,false);assert.equal(b.get('graph-area').hidden,false);
+  const b=boot(null,'#scenario=invalid');assert.equal(b.get('reagent').value,'');assert.equal(b.get('simple-error').hidden,false);assert.equal(b.get('graph-area').hidden,true);
 });
 test('all four pages and their scripts are included in deployment',()=>{
   const workflow=fs.readFileSync('.github/workflows/pages.yml','utf8');
@@ -94,12 +112,12 @@ test('all four pages and their scripts are included in deployment',()=>{
   const home=fs.readFileSync('index.html','utf8');assert.ok(home.includes('<h1>Which electron is cheaper?</h1>'));assert.ok(!home.includes('id="inputs"'));assert.ok(!home.includes('id="method"'));
 });
 test('theme icon retains accessible action labels and toggles both ways',()=>{
-  const b=boot();const theme=b.get('theme');assert.equal(theme.attributes['aria-label'],'Switch to dark mode');
+  const b=readyBoot();const theme=b.get('theme');assert.equal(theme.attributes['aria-label'],'Switch to dark mode');
   theme.listeners.click();assert.equal(theme.attributes['aria-label'],'Switch to light mode');assert.equal(theme.attributes['aria-pressed'],'true');
   theme.listeners.click();assert.equal(theme.attributes['aria-label'],'Switch to dark mode');assert.equal(theme.attributes['aria-pressed'],'false');
 });
 test('source catalogue has referenced defaults, no retired costs, and working search filters',()=>{
-  const b=boot();vm.runInContext(fs.readFileSync('sources.js','utf8'),b.context);
+  const b=readyBoot();vm.runInContext(fs.readFileSync('sources.js','utf8'),b.context);
   const rows=JSON.parse(vm.runInContext('JSON.stringify(SourceCatalogue.rows)',b.context));
   assert.equal(rows.filter(r=>r.status==='Referenced').length,37);
   assert.equal(rows.filter(r=>r.status==='Unavailable').length,0);
@@ -123,13 +141,13 @@ test('retired shared presets restore as custom without changing the numbers',()=
  assert.equal(b.get('reagent').children.some(o=>o.value==='adn'),false);
 });
 test('choosing custom electricity fills the other side with current sourced defaults',()=>{
- const b=boot();b.change('energy','custom');
+ const b=readyBoot();b.change('energy','custom');
  const saved=JSON.parse(b.storage.get('electron-cost-scenario'));
  assert.equal(saved.reagent,'h2-green');assert.equal(saved.price,5);assert.equal(saved.tariff,.1);
 });
 
 test('compare graph and reagent output use costs per mole',()=>{
- const b=boot();b.change('reagent','h2-grey');b.change('energy','eu');
+ const b=readyBoot();b.change('reagent','h2-grey');b.change('energy','eu');
  assert.equal(b.get('chemical-price').children[0].textContent,'0.0015');
  const graph=b.get('comparison-chart').innerHTML;
  assert.ok(graph.includes('dollars per mole of useful electron equivalents'));
@@ -140,7 +158,7 @@ test('compare graph and reagent output use costs per mole',()=>{
 
 test('added renewable presets select, calculate and persist on Compare and Details',()=>{
   for(const page of ['index.html','details.html']) {
-    const b=boot(null,'',page);
+    const b=readyBoot(null,'',page);
     for(const [id,tariff] of [['hydro',.057],['geothermal',.060],['wind-offshore',.079],['bioenergy',.087],['csp',.092]]) {
       if(page==='details.html') { b.get('energy').value=id;b.get('inputs').listeners.input({target:{id:'energy'}}); }
       else b.change('energy',id);
@@ -155,7 +173,7 @@ test('added renewable presets select, calculate and persist on Compare and Detai
 
 test('VALCOE choices retain their sourced scenario and restore on both calculator pages',()=>{
  for(const page of ['index.html','details.html']){
-  const b=boot(null,'',page);
+  const b=readyBoot(null,'',page);
   for(const [id,value] of [['solar',.070],['wind',.060],['wind-offshore',.050],['gas',.115],['coal',.165]]){
    const preset=id+'-eu2030-valcoe';
    if(page==='details.html'){b.get('energy').value=preset;b.get('inputs').listeners.input({target:{id:'energy'}});}else b.change('energy',preset);
@@ -170,7 +188,7 @@ test('VALCOE choices retain their sourced scenario and restore on both calculato
 
 test('metric checkbox switches prices and ranking without metric words in source names',()=>{
  for(const page of ['index.html','details.html']){
-  const b=boot(null,'',page);
+  const b=readyBoot(null,'',page);
   const select=id=>{if(page==='details.html'){b.get('energy').value=id;b.get('inputs').listeners.input({target:{id:'energy'}});}else b.change('energy',id);};
   const toggle=checked=>{b.get('valcoe').checked=checked;if(page==='details.html')b.get('inputs').listeners.input({target:{id:'valcoe'}});else b.get('valcoe').listeners.change();};
   select('solar');toggle(true);
@@ -195,7 +213,7 @@ test('custom VALCOE values and metric survive sharing and restore',()=>{
 
 test('EU and China industrial tariffs select and restore with transparent provenance',()=>{
  for(const page of ['index.html','details.html']){
-  const b=boot(null,'',page);
+  const b=readyBoot(null,'',page);
   for(const [id,tariff] of [['eu-industry',.11],['china-industry',.07]]){
    assert.ok(b.get('energy').children.some(o=>o.value===id));
    if(page==='details.html'){b.get('energy').value=id;b.get('inputs').listeners.input({target:{id:'energy'}});}else b.change('energy',id);
@@ -216,7 +234,7 @@ test('Start over clears saved and shared inputs and opens a clean default compar
  b.get('start-over').listeners.click();
  assert.equal(b.storage.has('electron-cost-scenario'),false);
  assert.equal(b.context.location.replacedWith,'/electronsCost/index.html');
- const fresh=boot();assert.equal(fresh.get('reagent').value,'h2-green');assert.equal(fresh.get('energy').value,'solar');assert.equal(fresh.get('valcoe').checked,false);assert.equal(fresh.get('voltage-value').textContent,'1 V');assert.equal(fresh.get('max-voltage').value,'5');
+ const fresh=boot();assert.equal(fresh.get('reagent').value,'');assert.equal(fresh.get('energy').value,'');assert.equal(fresh.get('voltage-comparison').hidden,true);assert.equal(fresh.get('valcoe').checked,false);assert.equal(fresh.get('voltage-value').textContent,'1 V');assert.equal(fresh.get('max-voltage').value,'5');
 });
 
 test('share previews use a deployed 1200 by 630 image and the visible title and subtitle',()=>{

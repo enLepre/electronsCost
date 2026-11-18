@@ -811,6 +811,7 @@ const EnergyChoices = (() => {
     if(select._energyMode===mode){select.value=id;return;}
     select._energyMode=mode;
     select.replaceChildren();
+    const placeholder=document.createElement('option');placeholder.value='';placeholder.textContent='choose an electricity source';placeholder.disabled=true;select.append(placeholder);
     for(const e of list(mode)){const option=document.createElement('option');option.value=e.id;option.textContent=e.name;select.append(option);}
     select.value=id;
   }
@@ -826,7 +827,8 @@ const EnergyChoices = (() => {
     const mode=metric(s);
     document.getElementById('valcoe').checked=mode==='valcoe';
     populate(document.getElementById('energy'),mode,s.energy);
-    document.getElementById('metric-note').textContent=mode==='valcoe'?'VALCOE: only sources with verified values are listed. EU 2030 scenarios; see Sources for each study.':'LCOE: generation-cost benchmarks. Grid-price entries remain delivered tariffs. See Sources for regions and years.';
+    const note=document.getElementById('metric-note');
+    if(note)note.textContent=mode==='valcoe'?'VALCOE: only sources with verified values are listed. EU 2030 scenarios; see Sources for each study.':'LCOE: generation-cost benchmarks. Grid-price entries remain delivered tariffs. See Sources for regions and years.';
   }
   return {metric,list,switchMetric,sync};
 })();
