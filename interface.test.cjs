@@ -24,7 +24,7 @@ function boot(saved=null,hash='',page='index.html'){
   }
   const storage=new Map(saved?[['electron-cost-scenario',JSON.stringify(saved)]]:[]);
   const sessionStorage={getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)};
-  const context=vm.createContext({document:{getElementById:get,createElement:()=>new Element(),querySelectorAll:()=>[],documentElement:{dataset:{}}},location:{hash,href:'https://example.test/electronsCost/index.html',pathname:'/electronsCost/index.html',replace(url){this.replacedWith=url;}},sessionStorage,localStorage:{getItem:()=>null,setItem:()=>{}},window:{addEventListener:()=>{}},URL});
+  const context=vm.createContext({document:{getElementById:get,createElement:()=>new Element(),querySelectorAll:()=>[],documentElement:{dataset:{}}},location:{hash,href:'https://example.test/electronsCost/index.html',pathname:'/electronsCost/index.html',replace(url){this.replacedWith=url;}},history:{replaceState(a,b,url){context.location.hash='';context.location.replacedWith=url;}},sessionStorage,localStorage:{getItem:()=>null,setItem:()=>{}},window:{addEventListener:()=>{}},URL});
   for(const file of ['model.js','data.js','navigation.js','chart.js',page==='details.html'?'app.js':'compare.js'])vm.runInContext(fs.readFileSync(file,'utf8'),context,{filename:file});
   return {get,storage,context,change:(id,value,event='change')=>{get(id).value=value;get(id).listeners[event]();}};
 }
@@ -60,7 +60,7 @@ test('source choices and voltage change result and preserve scenario',()=>{
   const previous=b.get('comparison-chart').innerHTML;b.change('voltage-slider','0.01','input');
   assert.match(b.get('comparison-status').textContent,/Electricity.*cheaper/);assert.notEqual(b.get('comparison-chart').innerHTML,previous);
   const stored=JSON.parse(b.storage.get('electron-cost-scenario'));assert.equal(stored.voltage,.01);
-  const restored=boot(stored);assert.equal(restored.get('reagent').value,'h2-grey');assert.equal(restored.get('energy').value,'eu');assert.equal(restored.get('voltage-value').textContent,'0.01 V');
+  const restored=boot(null,'#scenario='+encodeURIComponent(JSON.stringify(stored)));assert.equal(restored.get('reagent').value,'h2-grey');assert.equal(restored.get('energy').value,'eu');assert.equal(restored.get('voltage-value').textContent,'0.01 V');
 });
 test('Details direct load initializes presets, results, chart and ranking',()=>{
   const b=boot(null,'','details.html');
@@ -83,9 +83,9 @@ test('max V updates and clamps voltage; invalid ranges do not corrupt the scenar
 test('zero-cost comparisons avoid infinite ratios and label zero crossings',()=>{
   const b=readyBoot();b.change('voltage-slider','0','input');assert.match(b.get('comparison-status').textContent,/Electricity has zero cost/);
   const s=JSON.parse(b.storage.get('electron-cost-scenario'));s.tariff=0;
-  assert.match(boot(s).get('comparison-status').textContent,/no unique break-even/);
+  assert.match(boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s))).get('comparison-status').textContent,/no unique break-even/);
   s.price=0;s.tariff=.043;s.voltage=1;
-  assert.match(boot(s).get('comparison-status').textContent,/chemical reagent has zero cost.*break-even at 0 V/);
+  assert.match(boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s))).get('comparison-status').textContent,/chemical reagent has zero cost.*break-even at 0 V/);
 });
 
 test('shared custom input and efficiency values survive navigation',()=>{
@@ -164,7 +164,7 @@ test('added renewable presets select, calculate and persist on Compare and Detai
       else b.change('energy',id);
       const saved=JSON.parse(b.storage.get('electron-cost-scenario'));
       assert.equal(saved.energy,id);assert.equal(saved.tariff,tariff);
-      const restored=boot(saved,'',page);assert.equal(restored.get('energy').value,id);
+      const restored=boot(null,'#scenario='+encodeURIComponent(JSON.stringify(saved)),page);assert.equal(restored.get('energy').value,id);
       if(page==='details.html') assert.equal(Number(b.get('tariff').value),tariff);
       else assert.equal(b.get('tariff-price').textContent,tariff+' USD / kWh');
     }
@@ -179,7 +179,7 @@ test('VALCOE choices retain their sourced scenario and restore on both calculato
    if(page==='details.html'){b.get('energy').value=preset;b.get('inputs').listeners.input({target:{id:'energy'}});}else b.change('energy',preset);
    const saved=JSON.parse(b.storage.get('electron-cost-scenario'));
    assert.equal(saved.energy,preset);assert.equal(saved.tariff,value);
-   assert.equal(boot(saved,'',page).get('energy').value,preset);
+   assert.equal(boot(null,'#scenario='+encodeURIComponent(JSON.stringify(saved)),page).get('energy').value,preset);
    const record=JSON.parse(vm.runInContext('JSON.stringify(ENERGY.find(e=>e.id==='+JSON.stringify(preset)+'))',b.context));
    assert.match(record.basis,/VALCOE; not a tariff/);assert.match(record.period,/2030 Stated Policies/);
   }
@@ -198,12 +198,12 @@ test('metric checkbox switches prices and ranking without metric words in source
   assert.ok(b.get('energy').children.every(o=>!/LCOE|VALCOE/.test(o.textContent)));
   assert.ok(!b.get('energy').children.some(o=>o.value==='hydro'||o.value==='eu'));
   if(page==='details.html')assert.equal(b.get('ranking').children.length,7);
-  const restored=boot(s,'',page);assert.equal(restored.get('valcoe').checked,true);
+  const restored=boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s)),page);assert.equal(restored.get('valcoe').checked,true);
   toggle(false);assert.equal(b.get('energy').value,'solar');
   assert.equal(JSON.parse(b.storage.get('electron-cost-scenario')).tariff,.043);
   select('hydro');toggle(true);assert.equal(b.get('energy').value,'solar-eu2030-valcoe');assert.match(b.get('metric-status').textContent,/no verified VALCOE/);
   toggle(false);select('nuclear-old');toggle(true);toggle(false);
-  s=JSON.parse(b.storage.get('electron-cost-scenario'));assert.equal(boot(s,'',page).get('energy').value,'nuclear-old');
+  s=JSON.parse(b.storage.get('electron-cost-scenario'));assert.equal(boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s)),page).get('energy').value,'nuclear-old');
  }
 });
 test('custom VALCOE values and metric survive sharing and restore',()=>{
@@ -217,7 +217,7 @@ test('EU and China industrial tariffs select and restore with transparent proven
   for(const [id,tariff] of [['eu-industry',.11],['china-industry',.07]]){
    assert.ok(b.get('energy').children.some(o=>o.value===id));
    if(page==='details.html'){b.get('energy').value=id;b.get('inputs').listeners.input({target:{id:'energy'}});}else b.change('energy',id);
-   const s=JSON.parse(b.storage.get('electron-cost-scenario'));assert.equal(s.tariff,tariff);assert.equal(boot(s,'',page).get('energy').value,id);
+   const s=JSON.parse(b.storage.get('electron-cost-scenario'));assert.equal(s.tariff,tariff);assert.equal(boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s)),page).get('energy').value,id);
    const e=JSON.parse(vm.runInContext('JSON.stringify(ENERGY.find(e=>e.id==='+JSON.stringify(id)+'))',b.context));
    assert.match(e.reported,/rounded chart reading/);assert.match(e.period,/preliminary/);assert.match(e.basis,/tariff/);
   }
@@ -234,6 +234,7 @@ test('Start over clears saved and shared inputs and opens a clean default compar
  b.get('start-over').listeners.click();
  assert.equal(b.storage.has('electron-cost-scenario'),false);
  assert.equal(b.context.location.replacedWith,'/electronsCost/index.html');
+ assert.equal(b.get('reagent').value,'');assert.equal(b.get('energy').value,'');assert.equal(b.get('voltage-comparison').hidden,true);assert.equal(b.get('chemical-price').hidden,true);assert.equal(b.get('energy-price').hidden,true);
  const fresh=boot();assert.equal(fresh.get('reagent').value,'');assert.equal(fresh.get('energy').value,'');assert.equal(fresh.get('voltage-comparison').hidden,true);assert.equal(fresh.get('valcoe').checked,false);assert.equal(fresh.get('voltage-value').textContent,'1 V');assert.equal(fresh.get('max-voltage').value,'5');
 });
 
@@ -275,4 +276,9 @@ test('rhombus navigation opens, closes, and restores keyboard focus',()=>{
   const html=fs.readFileSync(page,'utf8');assert.ok(html.includes('aria-controls="main-menu"'));assert.match(html,/<header class="site-header shell">[\s\S]*?class="menu-outline"[\s\S]*?<\/header>/);assert.ok(html.includes('styles.css?v=20261118-transitions'));assert.ok(html.includes('src="menu.js?v=20261118-scroll"'));
  }
  assert.ok(fs.readFileSync('.github/workflows/pages.yml','utf8').includes('menu.js'));
+});
+
+test('ordinary opening ignores earlier saved selections',()=>{
+ const chosen=readyBoot();const saved=JSON.parse(chosen.storage.get('electron-cost-scenario'));
+ const fresh=boot(saved);assert.equal(fresh.get('reagent').value,'');assert.equal(fresh.get('energy').value,'');assert.equal(fresh.get('voltage-comparison').hidden,true);assert.equal(fresh.storage.has('electron-cost-scenario'),false);
 });

@@ -33,6 +33,13 @@ const ScenarioNav = (() => {
       url.hash='scenario='+encodeURIComponent(JSON.stringify(last));a.href=url.href;
     });
   }
+  function clear(){
+    last=null;
+    try{sessionStorage.removeItem('electron-cost-scenario');}catch{}
+    document.querySelectorAll('[data-scenario-link]').forEach(a=>{
+      const url=new URL(a.getAttribute('href'),location.href);url.hash='';a.href=url.href;
+    });
+  }
   const loaded=read();if(loaded)save(loaded);
   const page=location.pathname.split('/').pop()||'index.html';
   document.querySelectorAll('[data-scenario-link]').forEach(a=>{if(new URL(a.href,location.href).pathname.endsWith('/'+page))a.setAttribute('aria-current','page');});
@@ -44,5 +51,5 @@ const ScenarioNav = (() => {
   }
   theme.addEventListener('click',()=>{const dark=document.documentElement.dataset.theme!=='dark';setTheme(dark);try{localStorage.setItem('electron-cost-theme',dark?'dark':'light');}catch{}});
   try{setTheme(localStorage.getItem('electron-cost-theme')==='dark');}catch{}
-  return {read,save,valid};
+  return {read,save,valid,clear};
 })();

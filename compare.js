@@ -2,7 +2,10 @@
 const el=id=>document.getElementById(id);
 const format=(n,digits=4)=>n===0?'0':Math.abs(n)<.0001||Math.abs(n)>=1e6?n.toExponential(3):n.toLocaleString('en-US',{maximumSignificantDigits:digits});
 const defaultReagent=REAGENTS.find(r=>r.id==='h2-green'),defaultEnergy=ENERGY.find(e=>e.id==='solar');
-let scenario=ScenarioNav.read()||{reagent:'',energy:'',price:defaultReagent.price,mass:defaultReagent.mass,electrons:defaultReagent.n,utilization:100,tariff:defaultEnergy.tariff,voltage:1,faradaic:100,supply:100,amount:1,legacy:false,plotMax:5};
+const emptyScenario=()=>({reagent:'',energy:'',price:defaultReagent.price,mass:defaultReagent.mass,electrons:defaultReagent.n,utilization:100,tariff:defaultEnergy.tariff,voltage:1,faradaic:100,supply:100,amount:1,legacy:false,plotMax:5});
+const sharedScenario=location.hash.startsWith('#scenario=')?ScenarioNav.read():null;
+if(!sharedScenario)ScenarioNav.clear();
+let scenario=sharedScenario||emptyScenario();
 for(const [id,items] of [['reagent',REAGENTS],['energy',ENERGY]])for(const item of items){
   const option=document.createElement('option');option.value=item.id;option.textContent=item.name;el(id).append(option);
 }
@@ -94,6 +97,10 @@ el('max-voltage').addEventListener('input',()=>{
 window.addEventListener('resize',()=>render());
 
 el('start-over').addEventListener('click',()=>{
-  try{sessionStorage.removeItem('electron-cost-scenario');}catch{}
-  location.replace(location.pathname);
+  ScenarioNav.clear();
+  history.replaceState(null,'',location.pathname);
+  scenario=emptyScenario();
+  el('metric-status').textContent='';
+  el('max-voltage').setAttribute('aria-invalid','false');
+  render();
 });
