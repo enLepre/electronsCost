@@ -240,3 +240,20 @@ main.shell,main.shell.derivation{width:min(800px,calc(100% - 48px));max-width:80
 body .site-header{transition:opacity .22s ease,transform .22s ease,visibility .22s}
 body.is-page-scrolled .site-header{opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-50%) translateY(-12px)}
 @media(prefers-reduced-motion:reduce){body .site-header{transition:none}}
+
+/* Match the personal site's sequential page fade without replacing navigation. */
+@view-transition{navigation:auto}
+.site-header{view-transition-name:site-menu}
+.repository-footer{view-transition-name:site-footer}
+@keyframes page-fade-out{from{opacity:1}to{opacity:0}}
+@keyframes page-fade-in{from{opacity:0}to{opacity:1}}
+::view-transition{background:var(--paper)}
+::view-transition-old(root){animation:page-fade-out 300ms ease-in-out both;mix-blend-mode:normal}
+::view-transition-new(root){animation:page-fade-in 340ms ease-in-out 320ms both;mix-blend-mode:normal}
+::view-transition-group(site-footer),::view-transition-group(site-menu){z-index:10;animation:none}
+::view-transition-old(site-footer),::view-transition-old(site-menu){display:none}
+::view-transition-new(site-footer),::view-transition-new(site-menu){animation:none}
+@media(prefers-reduced-motion:reduce){
+ @view-transition{navigation:none}
+ ::view-transition-old(root),::view-transition-new(root){animation:none!important}
+}
