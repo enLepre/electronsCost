@@ -189,7 +189,7 @@ main.shell,main.shell.derivation{width:min(800px,calc(100% - 48px));max-width:80
 .site-header{position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:500;padding:24px 0;border:0;pointer-events:none}
 .menu {
   --menu-width: min(312px, calc(100vw - 42px));
-  --menu-height: min(372px, calc(100svh - 44px));
+  --menu-height: min(291.2px, calc(100svh - 44px));
   position: relative;
   width: 44px;
   height: 44px;
@@ -210,7 +210,7 @@ main.shell,main.shell.derivation{width:min(800px,calc(100% - 48px));max-width:80
 .menu-outline rect {
   fill: var(--paper);
   stroke: var(--ink);
-  transform: scale(.046, .039);
+  transform: scale(.046, .04945);
   transition: transform .34s cubic-bezier(.42,0,.38,1) .06s;
 }
 .menu:has(.menu-toggle:focus-visible) .menu-outline,
