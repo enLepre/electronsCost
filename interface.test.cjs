@@ -24,8 +24,8 @@ function boot(saved=null,hash='',page='index.html'){
   }
   const storage=new Map(saved?[['electron-cost-scenario',JSON.stringify(saved)]]:[]);
   const sessionStorage={getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,v),removeItem:k=>storage.delete(k)};
-  const context=vm.createContext({document:{getElementById:get,createElement:()=>new Element(),querySelectorAll:()=>[],documentElement:{dataset:{}}},location:{hash,href:'https://example.test/electronsCost/index.html',pathname:'/electronsCost/index.html',replace(url){this.replacedWith=url;}},history:{replaceState(a,b,url){context.location.hash='';context.location.replacedWith=url;}},sessionStorage,localStorage:{getItem:()=>null,setItem:()=>{}},window:{addEventListener:()=>{}},URL});
-  for(const file of ['model.js','data.js','navigation.js','chart.js',page==='details.html'?'app.js':'compare.js'])vm.runInContext(fs.readFileSync(file,'utf8'),context,{filename:file});
+  const context=vm.createContext({document:{getElementById:get,createElement:()=>new Element(),querySelectorAll:()=>[],documentElement:{dataset:{}}},location:{hash,href:'https://example.test/electronsCost/index.html',pathname:'/electronsCost/index.html',replace(url){this.replacedWith=url;}},history:{replaceState(a,b,url){context.location.hash='';context.location.replacedWith=url;}},sessionStorage,localStorage:{getItem:()=>null,setItem:()=>{}},window:{addEventListener:()=>{}},URL,URLSearchParams});
+  for(const file of ['model.js','data.js','share-links.js','navigation.js','chart.js',page==='details.html'?'app.js':'compare.js'])vm.runInContext(fs.readFileSync(file,'utf8'),context,{filename:file});
   return {get,storage,context,change:(id,value,event='change')=>{get(id).value=value;get(id).listeners[event]();}};
 }
 function readyBoot(saved=null,hash='',page='index.html'){
@@ -295,7 +295,7 @@ test('Share copies the complete selected scenario and restores it',async()=>{
  const b=readyBoot();b.change('voltage-slider','2.5','input');let copied;
  b.context.navigator={clipboard:{writeText:async text=>{copied=text;}}};
  await b.get('share-comparison').listeners.click();assert.equal(b.get('share-status').textContent,'Link copied');
- const url=new URL(copied),shared=JSON.parse(decodeURIComponent(url.hash.slice(10)));
+ const url=new URL(copied),shared=vm.runInContext('ShareLinks.decode('+JSON.stringify(url.hash)+')',b.context);assert.ok(copied.length<100);assert.match(url.hash,/green-hydrogen-vs-solar/);
  assert.equal(shared.reagent,'h2-green');assert.equal(shared.energy,'solar');assert.equal(shared.voltage,2.5);
  const restored=boot(null,url.hash);assert.equal(restored.get('voltage-value').textContent,'2.5 V');assert.equal(restored.get('energy').value,'solar');
  b.get('start-over').listeners.click();assert.equal(b.get('share-comparison').disabled,true);assert.equal(b.get('share-status').textContent,'');
@@ -303,6 +303,6 @@ test('Share copies the complete selected scenario and restores it',async()=>{
 test('Share offers a selectable link when clipboard access is unavailable',async()=>{
  const b=readyBoot();b.context.navigator={};let selected=false;
  b.get('share-url').focus=()=>{};b.get('share-url').select=()=>{selected=true;};
- await b.get('share-comparison').listeners.click();assert.equal(b.get('share-fallback').hidden,false);assert.equal(selected,true);assert.ok(b.get('share-url').value.includes('#scenario='));
+ await b.get('share-comparison').listeners.click();assert.equal(b.get('share-fallback').hidden,false);assert.equal(selected,true);assert.ok(b.get('share-url').value.includes('#green-hydrogen-vs-solar'));
  b.change('reagent','h2-grey');assert.equal(b.get('share-fallback').hidden,true);
 });

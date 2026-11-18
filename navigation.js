@@ -16,8 +16,8 @@ const ScenarioNav = (() => {
   }
   function read() {
     try {
-      if(location.hash.startsWith('#scenario=')) {
-        const s=normalize(JSON.parse(decodeURIComponent(location.hash.slice(10))));
+      if(ShareLinks.isShared(location.hash)) {
+        const s=normalize(ShareLinks.decode(location.hash));
         return valid(s)?s:null;
       }
       const s=normalize(JSON.parse(sessionStorage.getItem('electron-cost-scenario')));
@@ -30,7 +30,7 @@ const ScenarioNav = (() => {
     try{sessionStorage.setItem('electron-cost-scenario',JSON.stringify(last));}catch{}
     document.querySelectorAll('[data-scenario-link]').forEach(a=>{
       const url=new URL(a.getAttribute('href'),location.href);
-      url.hash='scenario='+encodeURIComponent(JSON.stringify(last));a.href=url.href;
+      url.hash=ShareLinks.encode(last);a.href=url.href;
     });
   }
   function clear(){

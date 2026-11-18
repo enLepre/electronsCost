@@ -61,7 +61,7 @@ $('inputs').addEventListener('input',e=>{if(e.target.id==='valcoe'){const before
 $('plot-max').addEventListener('input',render);$('reset-inputs').addEventListener('click',()=>{history.replaceState(null,'',location.pathname+location.search);reset();});
 $('share').addEventListener('click',async()=>{
   if(!current)return;
-  const url=new URL('index.html',location.href);url.hash='scenario='+encodeURIComponent(JSON.stringify(current.s));
+  const url=ShareLinks.url(current.s,new URL('index.html',location.href));
   try{await navigator.clipboard.writeText(url.href);$('status').textContent='Comparison link copied, including all inputs.';}catch{$('share-fallback').hidden=false;$('share-url').value=url.href;$('share-url').select();$('status').textContent='Select and copy the comparison link below.';}
 });
 $('export').addEventListener('click',()=>{
@@ -74,9 +74,9 @@ $('export').addEventListener('click',()=>{
 });
 reset();
 function restore(){
-  if(!location.hash.startsWith('#scenario=') && !carriedScenario)return;
+  if(!ShareLinks.isShared(location.hash) && !carriedScenario)return;
   try{
-    const s=location.hash.startsWith('#scenario=') ? ScenarioNav.read() : carriedScenario;
+    const s=ShareLinks.isShared(location.hash) ? ScenarioNav.read() : carriedScenario;
     if(!REAGENTS.some(r=>r.id===s.reagent)||!ENERGY.some(e=>e.id===s.energy)||typeof s.legacy!=='boolean')throw new Error();
     ElectronModel.calculate(s);
     if(!Number.isFinite(s.plotMax)||s.plotMax<=0)throw new Error();

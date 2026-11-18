@@ -2,7 +2,7 @@
 
 A small, dependency-free HTML tool comparing chemical reagent costs with electrical energy costs per mole of useful electron equivalents. Visual styling follows enLepre's personal website and CitationNetwork: Source Serif 4 (with a Georgia fallback), warm paper, ink, fine rules, and restrained teal/plum chart accents.
 
-Open `index.html` directly for offline calculations, or serve this directory over HTTP. No build, account or API keys are required. The Assumptions page loads pinned KaTeX 0.19.1 scripts, styles and fonts from jsDelivr for LaTeX-style typesetting; scripts and styles use integrity checks. Readable equation fallbacks remain if that service is unavailable. The calculator logic has no external dependencies; Source Serif 4 loads from Google Fonts, with a local serif fallback when offline. Shared links work for anyone who can access the same hosted page. The URL fragment stores the scenario; inputs are not uploaded. CSV export includes the complete input basis and outputs.
+Open `index.html` directly for offline calculations, or serve this directory over HTTP. No build, account or API keys are required. The Assumptions page loads pinned KaTeX 0.19.1 scripts, styles and fonts from jsDelivr for LaTeX-style typesetting; scripts and styles use integrity checks. Readable equation fallbacks remain if that service is unavailable. The calculator logic has no external dependencies; Source Serif 4 loads from Google Fonts, with a local serif fallback when offline. Shared links work for anyone who can access the same hosted page. Readable URL fragments identify the source pair and add compact fields for edited inputs; inputs are not uploaded. CSV export includes the complete input basis and outputs.
 
 ## Features
 
@@ -83,3 +83,9 @@ Compare includes a Start over button above the voltage controls. It removes the 
 ## Link preview
 
 All four pages include Open Graph and large-image Twitter metadata pointing to the committed 1200 × 630 PNG. The preview uses the same Libre Baskerville font, cream background, centred layout and rendering function as the personal blog notes, with the Compare page title and subtitle. The image filename contains a content hash to distinguish future revisions. Regenerate the image and update the metadata when changing that wording.
+
+## Readable comparison links and result images
+
+Share creates links such as `https://enlepre.github.io/electronsCost/#lithium-vs-us-grid?v=2.5`. Source names identify the presets; optional fields preserve edited prices, efficiencies, voltage, plot range, amount and legacy chemistry. Original `#scenario=` links still open. Default values come from the current source dataset.
+
+Download result image exports a 1200 × 630 PNG containing source names, costs, voltage, the comparison verdict and efficiency assumptions. Attach this image alongside the link when sharing. GitHub Pages remains static: automatic link previews use the general site card, not the selected result. No sharing service or external storage is used.

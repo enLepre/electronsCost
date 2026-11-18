@@ -3,7 +3,7 @@ const el=id=>document.getElementById(id);
 const format=(n,digits=4)=>n===0?'0':Math.abs(n)<.0001||Math.abs(n)>=1e6?n.toExponential(3):n.toLocaleString('en-US',{maximumSignificantDigits:digits});
 const defaultReagent=REAGENTS.find(r=>r.id==='h2-green'),defaultEnergy=ENERGY.find(e=>e.id==='solar');
 const emptyScenario=()=>({reagent:'',energy:'',price:defaultReagent.price,mass:defaultReagent.mass,electrons:defaultReagent.n,utilization:100,tariff:defaultEnergy.tariff,voltage:1,faradaic:100,supply:100,amount:1,legacy:false,plotMax:5});
-const sharedScenario=location.hash.startsWith('#scenario=')?ScenarioNav.read():null;
+const sharedScenario=ShareLinks.isShared(location.hash)?ScenarioNav.read():null;
 if(!sharedScenario)ScenarioNav.clear();
 let scenario=sharedScenario||emptyScenario();
 for(const [id,items] of [['reagent',REAGENTS],['energy',ENERGY]])for(const item of items){
@@ -28,6 +28,7 @@ function render(){
   const ready=!!(scenario.reagent&&scenario.energy);
   el('voltage-comparison').hidden=!ready;
   el('share-comparison').disabled=!ready;
+  el('download-result').disabled=!ready;
   el('share-status').textContent='';
   el('share-fallback').hidden=true;
   el('metric-control').hidden=!scenario.energy;
@@ -74,7 +75,7 @@ function openCustom(){
   const s={...scenario,reagent:scenario.reagent||defaultReagent.id,energy:scenario.energy||defaultEnergy.id};
   if(!scenario.reagent){const r=defaultReagent;s.price=r.price;s.mass=r.mass;s.electrons=r.n;}
   if(!scenario.energy)s.tariff=defaultEnergy.tariff;
-  ScenarioNav.save(s);location.href='details.html#scenario='+encodeURIComponent(JSON.stringify(s));
+  ScenarioNav.save(s);location.href=ShareLinks.url(s,new URL('details.html',location.href)).href;
 }
 el('voltage-slider').addEventListener('input',()=>{scenario.voltage=Number(el('voltage-slider').value);render();});
 const chart=el('comparison-chart');
@@ -89,7 +90,7 @@ chart.addEventListener('pointermove',e=>{if(chart.hasPointerCapture(e.pointerId)
 chart.addEventListener('pointerup',e=>{if(chart.hasPointerCapture(e.pointerId))chart.releasePointerCapture(e.pointerId);});
 window.addEventListener('hashchange',()=>{const s=ScenarioNav.read();if(s){scenario=s;render();}});
 render();
-if(location.hash.startsWith('#scenario=')&&!ScenarioNav.read()){el('simple-error').hidden=false;el('simple-error').textContent='This comparison link is invalid. Choose your sources to begin.';}
+if(ShareLinks.isShared(location.hash)&&!ScenarioNav.read()){el('simple-error').hidden=false;el('simple-error').textContent='This comparison link is invalid. Choose your sources to begin.';}
 
 el('max-voltage').addEventListener('input',()=>{
   const value=Number(el('max-voltage').value);
@@ -113,7 +114,7 @@ el('start-over').addEventListener('click',()=>{
 
 el('share-comparison').addEventListener('click',async()=>{
   if(!ScenarioNav.valid(scenario))return;
-  const url=new URL(location.href);url.hash='scenario='+encodeURIComponent(JSON.stringify(scenario));
+  const url=ShareLinks.url(scenario,location.href);
   try{
     await navigator.clipboard.writeText(url.href);
     el('share-status').textContent='Link copied';
@@ -121,4 +122,11 @@ el('share-comparison').addEventListener('click',async()=>{
     el('share-fallback').hidden=false;el('share-url').value=url.href;el('share-url').focus();el('share-url').select();
     el('share-status').textContent='Copy the link below';
   }
+});
+
+el('download-result').addEventListener('click',async()=>{
+  if(!ScenarioNav.valid(scenario))return;
+  const snapshot={...scenario};
+  try{await ResultImage.download(snapshot);el('share-status').textContent='Result image downloaded';}
+  catch{el('share-status').textContent='Could not download image. Please try again.';}
 });
