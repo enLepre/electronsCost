@@ -32,6 +32,8 @@ function render(){
   price('energy-price',scenario.energy?ElectronModel.calculate(scenario).electrical:null,'USD / mol e⁻');
   el('tariff-price').textContent=scenario.energy?format(scenario.tariff)+' USD / kWh':'';
   el('tariff-price').hidden=!scenario.energy;
+  el('reagent-mass-price').textContent=scenario.reagent?format(scenario.price)+' USD / kg':'';
+  el('reagent-mass-price').hidden=!scenario.reagent;
   if(!ready){el('comparison-status').textContent='';return;}
   try{
     const result=ElectronModel.calculate(scenario);

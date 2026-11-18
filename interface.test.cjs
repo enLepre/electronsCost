@@ -282,3 +282,11 @@ test('ordinary opening ignores earlier saved selections',()=>{
  const chosen=readyBoot();const saved=JSON.parse(chosen.storage.get('electron-cost-scenario'));
  const fresh=boot(saved);assert.equal(fresh.get('reagent').value,'');assert.equal(fresh.get('energy').value,'');assert.equal(fresh.get('voltage-comparison').hidden,true);assert.equal(fresh.storage.has('electron-cost-scenario'),false);
 });
+
+test('reagent price per kilogram appears independently and clears on reset',()=>{
+ const b=boot();assert.equal(b.get('reagent-mass-price').hidden,true);
+ b.change('reagent','li');assert.equal(b.get('reagent-mass-price').textContent,'4,060 USD / kg');assert.equal(b.get('reagent-mass-price').hidden,false);assert.equal(b.get('voltage-comparison').hidden,true);
+ b.change('reagent','h2-green');assert.equal(b.get('reagent-mass-price').textContent,'5 USD / kg');
+ b.change('energy','solar');b.change('voltage-slider','2','input');assert.equal(b.get('reagent-mass-price').textContent,'5 USD / kg');
+ b.get('start-over').listeners.click();assert.equal(b.get('reagent-mass-price').hidden,true);assert.equal(b.get('reagent-mass-price').textContent,'');
+});

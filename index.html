@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f5f2ec"><title>Which electron is cheaper?</title><link rel="stylesheet" href="styles.css?v=20261118-menu-contrast"><script defer src="model.js"></script><script defer src="chart.js?v=20261113"></script><script defer src="data.js?v=20261118-progressive"></script><script defer src="navigation.js?v=20261118-empty"></script><script defer src="compare.js?v=20261118-empty"></script><link rel="icon" type="image/svg+xml" sizes="any" href="favicon.svg?v=1">
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f5f2ec"><title>Which electron is cheaper?</title><link rel="stylesheet" href="styles.css?v=20261118-menu-contrast"><script defer src="model.js"></script><script defer src="chart.js?v=20261113"></script><script defer src="data.js?v=20261118-progressive"></script><script defer src="navigation.js?v=20261118-empty"></script><script defer src="compare.js?v=20261118-mass-price"></script><link rel="icon" type="image/svg+xml" sizes="any" href="favicon.svg?v=1">
 <meta name="description" content="Compare the cost of electrons from a chemical redox reagent with electrolysis at your chosen cell voltage.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Electron Cost">
@@ -22,7 +22,7 @@
 <section class="question"><h1>Which electron is cheaper?</h1><p class="subtitle">Compare the cost of electrons from a chemical redox reagent with electrolysis at your chosen cell voltage.</p></section>
 <section id="comparison" aria-label="Compare electron costs">
 <div class="choices">
-<div class="choice chemical-choice"><label class="choice-label" for="reagent">Chemical reagent</label><select id="reagent"><option value="" disabled selected>choose a chemical reagent</option></select><output id="chemical-price" class="choice-price" hidden aria-live="polite"></output></div>
+<div class="choice chemical-choice"><label class="choice-label" for="reagent">Chemical reagent</label><select id="reagent"><option value="" disabled selected>choose a chemical reagent</option></select><output id="chemical-price" class="choice-price" hidden aria-live="polite"></output><p id="reagent-mass-price" class="tariff-price" aria-live="polite" hidden></p></div>
 <div class="choice electricity-choice"><div class="electricity-heading"><label class="choice-label" for="energy">Electricity</label><label id="metric-control" class="check metric-toggle" hidden><input type="checkbox" id="valcoe"> Use VALCOE</label></div><select id="energy"><option value="" disabled selected>choose an electricity source</option></select><output id="energy-price" class="choice-price" aria-live="polite"></output><p id="tariff-price" class="tariff-price" hidden></p><p id="metric-status" class="caption" role="status"></p></div>
 </div>
 <section id="voltage-comparison" class="simple-plot" aria-label="Voltage comparison" hidden>
