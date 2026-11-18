@@ -160,3 +160,15 @@ h1,.question h1{letter-spacing:-.02em}
 .electricity-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.electricity-heading label{margin:0}.electricity-heading .metric-toggle{font-size:14px;white-space:nowrap}.metric-toggle input{width:16px;min-height:18px}.electricity-heading{margin:16px 0 7px}#metric-status:empty{display:none}
 
 .reset-row{display:flex;justify-content:flex-end;margin:8px 0 12px}.start-over{font-size:14px;color:var(--muted);border-bottom:1px solid var(--control);padding:6px 0;min-height:40px}.start-over:hover{color:var(--electric)}
+
+/* Share tracks so headings, selectors, and costs align across both sources. */
+@media(min-width:601px){
+ .choices{column-gap:60px;row-gap:0}
+ .choice{display:grid;grid-template-rows:subgrid;grid-row:span 6}
+ .choice>.choice-label,.choice>.electricity-heading{grid-row:1;margin:10px 0 0;min-height:24px;align-content:center}
+ .choice>select{grid-row:2}
+ .choice>.choice-price{grid-row:3}
+ .choice>.tariff-price{grid-row:4}
+ .choice>#metric-note{grid-row:5}
+ .choice>#metric-status{grid-row:6}
+}

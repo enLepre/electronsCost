@@ -91,7 +91,7 @@ test('all four pages and their scripts are included in deployment',()=>{
     assert.ok(html.match(/<footer[\s\S]*?github.com[\s\S]*?<\/footer>/));
     assert.ok(header.includes('class="theme-moon"'));assert.ok(header.includes('class="theme-sun"'));
   }
-  const home=fs.readFileSync('index.html','utf8');assert.ok(home.includes('<h1>which electron is cheaper?</h1>'));assert.ok(!home.includes('id="inputs"'));assert.ok(!home.includes('id="method"'));
+  const home=fs.readFileSync('index.html','utf8');assert.ok(home.includes('<h1>Which electron is cheaper?</h1>'));assert.ok(!home.includes('id="inputs"'));assert.ok(!home.includes('id="method"'));
 });
 test('theme icon retains accessible action labels and toggles both ways',()=>{
   const b=boot();const theme=b.get('theme');assert.equal(theme.attributes['aria-label'],'Switch to dark mode');
