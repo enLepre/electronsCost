@@ -21,6 +21,14 @@
     if (!menu.contains(event.target)) setOpen(false);
   });
   const header = document.querySelector('.site-header');
+  const footer = document.querySelector('.repository-footer');
+  // Wrapped links need the same safe clearance as a single-line footer.
+  if (footer && typeof ResizeObserver !== 'undefined') {
+    const resize = new ResizeObserver(() => {
+      document.body.style.setProperty('--footer-clearance', Math.max(58, footer.offsetHeight) + 'px');
+    });
+    resize.observe(footer);
+  }
   let lastHidden;
   const updateScroll = () => {
     const hidden = window.scrollY > 48;
@@ -28,6 +36,7 @@
     lastHidden = hidden;
     document.body.classList.toggle('is-page-scrolled', hidden);
     header.inert = hidden;
+    if (footer) footer.inert = hidden;
     if (hidden) setOpen(false);
   };
   window.addEventListener('scroll', updateScroll, { passive: true });
