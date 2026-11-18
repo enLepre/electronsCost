@@ -292,3 +292,5 @@ body>.repository-footer{flex-shrink:0}
 /* Match the personal website menu typography, including its title. */
 .menu nav{font-family:Georgia,"Times New Roman",serif}
 .menu nav .brand{font-size:23px;line-height:1.2;letter-spacing:-.02em;font-style:normal;white-space:nowrap}
+
+.reset-row{align-items:center;flex-wrap:wrap;gap:18px}.reset-row .caption{margin:0}.start-over:disabled{opacity:.5;cursor:default}#share-url{font-size:14px}

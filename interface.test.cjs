@@ -273,7 +273,7 @@ test('rhombus navigation opens, closes, and restores keyboard focus',()=>{
  window.scrollY=100;handlers.pageshow();assert.equal(scrolled,true);assert.equal(header.inert,true);
  window.scrollY=0;handlers.pageshow();assert.equal(scrolled,false);assert.equal(header.inert,false);
  for(const page of ['index.html','details.html','assumptions.html','sources.html']){
-  const html=fs.readFileSync(page,'utf8');assert.ok(html.includes('aria-controls="main-menu"'));assert.match(html,/<header class="site-header shell">[\s\S]*?class="menu-outline"[\s\S]*?<\/header>/);assert.ok(html.includes('styles.css?v=20261118-menu-height'));assert.ok(html.includes('src="menu.js?v=20261118-personal-menu"'));
+  const html=fs.readFileSync(page,'utf8');assert.ok(html.includes('aria-controls="main-menu"'));assert.match(html,/<header class="site-header shell">[\s\S]*?class="menu-outline"[\s\S]*?<\/header>/);assert.ok(html.includes('styles.css?v=20261118-share'));assert.ok(html.includes('src="menu.js?v=20261118-personal-menu"'));
  }
  assert.ok(fs.readFileSync('.github/workflows/pages.yml','utf8').includes('menu.js'));
 });
@@ -289,4 +289,20 @@ test('reagent price per kilogram appears independently and clears on reset',()=>
  b.change('reagent','h2-green');assert.equal(b.get('reagent-mass-price').textContent,'5 USD / kg');
  b.change('energy','solar');b.change('voltage-slider','2','input');assert.equal(b.get('reagent-mass-price').textContent,'5 USD / kg');
  b.get('start-over').listeners.click();assert.equal(b.get('reagent-mass-price').hidden,true);assert.equal(b.get('reagent-mass-price').textContent,'');
+});
+
+test('Share copies the complete selected scenario and restores it',async()=>{
+ const b=readyBoot();b.change('voltage-slider','2.5','input');let copied;
+ b.context.navigator={clipboard:{writeText:async text=>{copied=text;}}};
+ await b.get('share-comparison').listeners.click();assert.equal(b.get('share-status').textContent,'Link copied');
+ const url=new URL(copied),shared=JSON.parse(decodeURIComponent(url.hash.slice(10)));
+ assert.equal(shared.reagent,'h2-green');assert.equal(shared.energy,'solar');assert.equal(shared.voltage,2.5);
+ const restored=boot(null,url.hash);assert.equal(restored.get('voltage-value').textContent,'2.5 V');assert.equal(restored.get('energy').value,'solar');
+ b.get('start-over').listeners.click();assert.equal(b.get('share-comparison').disabled,true);assert.equal(b.get('share-status').textContent,'');
+});
+test('Share offers a selectable link when clipboard access is unavailable',async()=>{
+ const b=readyBoot();b.context.navigator={};let selected=false;
+ b.get('share-url').focus=()=>{};b.get('share-url').select=()=>{selected=true;};
+ await b.get('share-comparison').listeners.click();assert.equal(b.get('share-fallback').hidden,false);assert.equal(selected,true);assert.ok(b.get('share-url').value.includes('#scenario='));
+ b.change('reagent','h2-grey');assert.equal(b.get('share-fallback').hidden,true);
 });

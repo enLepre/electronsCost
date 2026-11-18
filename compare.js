@@ -27,6 +27,9 @@ function render(){
   slider.setAttribute('aria-valuetext',format(scenario.voltage)+' volts');
   const ready=!!(scenario.reagent&&scenario.energy);
   el('voltage-comparison').hidden=!ready;
+  el('share-comparison').disabled=!ready;
+  el('share-status').textContent='';
+  el('share-fallback').hidden=true;
   el('metric-control').hidden=!scenario.energy;
   slider.disabled=!ready;el('graph-area').hidden=!ready;el('simple-error').hidden=true;
   price('chemical-price',scenario.reagent?scenario.price*scenario.mass/(1000*scenario.electrons*scenario.utilization/100):null,'USD / mol e⁻');
@@ -106,4 +109,16 @@ el('start-over').addEventListener('click',()=>{
   el('metric-status').textContent='';
   el('max-voltage').setAttribute('aria-invalid','false');
   render();
+});
+
+el('share-comparison').addEventListener('click',async()=>{
+  if(!ScenarioNav.valid(scenario))return;
+  const url=new URL(location.href);url.hash='scenario='+encodeURIComponent(JSON.stringify(scenario));
+  try{
+    await navigator.clipboard.writeText(url.href);
+    el('share-status').textContent='Link copied';
+  }catch{
+    el('share-fallback').hidden=false;el('share-url').value=url.href;el('share-url').focus();el('share-url').select();
+    el('share-status').textContent='Copy the link below';
+  }
 });
