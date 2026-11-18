@@ -267,3 +267,7 @@ body.is-page-scrolled .site-header{opacity:0;visibility:hidden;pointer-events:no
 body{min-height:100vh;min-height:100svh;display:flex;flex-direction:column}
 body>main.shell{flex:1 0 auto;margin-block:0}
 body>.repository-footer{flex-shrink:0}
+
+/* Keep open-menu text bright and legible against the dark background. */
+:root[data-theme=dark] .menu nav,:root[data-theme=dark] .menu nav a,:root[data-theme=dark] .menu nav #theme.theme-toggle{color:#f5f7fa}
+:root[data-theme=dark] .menu nav a:hover,:root[data-theme=dark] .menu nav #theme.theme-toggle:hover{color:var(--electric)}
