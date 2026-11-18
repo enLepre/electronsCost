@@ -27,6 +27,7 @@ function render(){
   slider.setAttribute('aria-valuetext',format(scenario.voltage)+' volts');
   const ready=!!(scenario.reagent&&scenario.energy);
   el('voltage-comparison').hidden=!ready;
+  el('example-footer').hidden=ready;
   el('share-comparison').disabled=!ready;
   el('download-result').disabled=!ready;
   el('share-status').textContent='';

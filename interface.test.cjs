@@ -313,3 +313,14 @@ test('Try an example loads a complete comparison and Start over clears it',()=>{
  b.change('voltage-slider','3','input');b.get('try-example').listeners.click();assert.equal(b.get('voltage-value').textContent,'1 V');
  b.get('start-over').listeners.click();assert.equal(b.get('reagent').value,'');assert.equal(b.get('energy').value,'');assert.equal(b.get('voltage-comparison').hidden,true);
 });
+
+test('example button hides only after both selections and returns after reset',()=>{
+ for(const first of ['reagent','energy']){
+  const b=boot();assert.equal(b.get('example-footer').hidden,false);
+  b.change(first,first==='reagent'?'h2-green':'solar');assert.equal(b.get('example-footer').hidden,false);
+  b.change(first==='reagent'?'energy':'reagent',first==='reagent'?'solar':'h2-green');assert.equal(b.get('example-footer').hidden,true);
+  b.get('start-over').listeners.click();assert.equal(b.get('example-footer').hidden,false);
+  b.get('try-example').listeners.click();assert.equal(b.get('example-footer').hidden,true);
+ }
+ const shared=boot(null,'#green-hydrogen-vs-solar');assert.equal(shared.get('example-footer').hidden,true);
+});
