@@ -19,6 +19,7 @@ function price(target,value,unit){
 }
 function render(){
   EnergyChoices.sync(scenario);el('reagent').value=scenario.reagent;
+  window.SourceDropdowns?.sync();
   const slider=el('voltage-slider');
   const max=Math.max(scenario.plotMax,scenario.voltage,.01);
   el('max-voltage').value=max;slider.max=max;slider.step='any';slider.value=scenario.voltage;

@@ -271,3 +271,21 @@ body>.repository-footer{flex-shrink:0}
 /* Keep open-menu text bright and legible against the dark background. */
 :root[data-theme=dark] .menu nav,:root[data-theme=dark] .menu nav a,:root[data-theme=dark] .menu nav #theme.theme-toggle{color:#f5f7fa}
 :root[data-theme=dark] .menu nav a:hover,:root[data-theme=dark] .menu nav #theme.theme-toggle:hover{color:var(--electric)}
+
+/* Searchable source selectors, using the same palette in both themes. */
+.source-dropdown{position:relative;min-width:0;grid-row:2}
+.source-trigger{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;min-height:58px;padding:16px 6px 16px 2px;border-bottom:1px solid var(--control);text-align:left;font-size:17px;color:var(--ink)}
+.source-trigger>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.source-arrow{width:7px;height:7px;flex-shrink:0;border-right:1px solid currentColor;border-bottom:1px solid currentColor;transform:rotate(45deg);margin:0 5px 4px 0}
+.source-trigger[aria-expanded=true] .source-arrow{transform:rotate(225deg);margin-bottom:0}
+.source-panel{position:absolute;z-index:50;top:calc(100% + 6px);left:0;width:100%;padding:10px;background:var(--paper);color:var(--ink);border:1px solid var(--control);box-shadow:0 8px 24px #0002}
+.source-panel .source-search{font-size:15px;min-height:40px;padding:8px 10px;background:var(--paper);border:1px solid var(--line)}
+.source-search::placeholder{color:var(--muted);opacity:1}
+.source-options{max-height:min(280px,40svh);overflow-y:auto;overscroll-behavior:contain;margin-top:8px;scroll-padding:4px}
+.source-option{position:relative;padding:10px 28px 10px 10px;min-height:44px;font-size:15px;line-height:1.4;cursor:pointer;overflow-wrap:anywhere;border-left:2px solid transparent}
+.source-option:hover,.source-option.is-active{background:var(--shade)}
+.source-option[aria-selected=true]{color:var(--electric);border-left-color:var(--electric)}
+.source-option[aria-selected=true]::after{content:'✓';position:absolute;right:8px;top:10px}
+.source-option.is-active{outline:1px solid var(--control);outline-offset:-1px}
+.source-empty{font-size:14px;color:var(--muted);margin:12px 10px}
+@media(max-width:680px){.source-trigger{min-height:54px;padding:12px 6px 12px 0;font-size:16px}}
