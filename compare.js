@@ -1,6 +1,6 @@
 'use strict';
 const el=id=>document.getElementById(id);
-const format=(n,digits=4)=>n===0?'0':Math.abs(n)<.0001||Math.abs(n)>=1e6?n.toExponential(3):n.toLocaleString('en-US',{maximumSignificantDigits:digits});
+const format=(n,digits=4)=>n===0?'0':Math.abs(n)<.0001||Math.abs(n)>=1e6?n.toExponential(3):n.toLocaleString('en-US',{maximumSignificantDigits:digits}).replaceAll(',', ' ');
 const defaultReagent=REAGENTS.find(r=>r.id==='h2-green'),defaultEnergy=ENERGY.find(e=>e.id==='solar');
 const emptyScenario=()=>({reagent:'',energy:'',price:defaultReagent.price,mass:defaultReagent.mass,electrons:defaultReagent.n,utilization:100,tariff:defaultEnergy.tariff,voltage:1,faradaic:100,supply:100,amount:1,legacy:false,plotMax:5});
 const sharedScenario=ShareLinks.isShared(location.hash)?ScenarioNav.read():null;

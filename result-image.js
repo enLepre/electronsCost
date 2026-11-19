@@ -1,7 +1,7 @@
 'use strict';
 const ResultImage = (() => {
   const format = (n, digits = 4) => n === 0 ? '0' : Math.abs(n) < .0001 || Math.abs(n) >= 1e6
-    ? n.toExponential(3) : n.toLocaleString('en-US', {maximumSignificantDigits:digits});
+    ? n.toExponential(3) : n.toLocaleString('en-US',{maximumSignificantDigits:digits}).replaceAll(',', ' ');
   function draw(canvas, s) {
     const r = ElectronModel.calculate(s);
     const chemical = REAGENTS.find(item => item.id === s.reagent);

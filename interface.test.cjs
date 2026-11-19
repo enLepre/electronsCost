@@ -273,7 +273,7 @@ test('rhombus navigation opens, closes, and restores keyboard focus',()=>{
  window.scrollY=100;handlers.pageshow();assert.equal(scrolled,true);assert.equal(header.inert,true);
  window.scrollY=0;handlers.pageshow();assert.equal(scrolled,false);assert.equal(header.inert,false);
  for(const page of ['index.html','details.html','assumptions.html','sources.html']){
-  const html=fs.readFileSync(page,'utf8');assert.ok(html.includes('aria-controls="main-menu"'));assert.match(html,/<header class="site-header shell">[\s\S]*?class="menu-outline"[\s\S]*?<\/header>/);assert.ok(html.includes('styles.css?v=20261119-center'));assert.ok(html.includes('src="menu.js?v=20261118-footer"'));
+  const html=fs.readFileSync(page,'utf8');assert.ok(html.includes('aria-controls="main-menu"'));assert.match(html,/<header class="site-header shell">[\s\S]*?class="menu-outline"[\s\S]*?<\/header>/);assert.ok(html.includes('styles.css?v=20261119-actions'));assert.ok(html.includes('src="menu.js?v=20261118-footer"'));
  }
  assert.ok(fs.readFileSync('.github/workflows/pages.yml','utf8').includes('menu.js'));
 });
@@ -285,7 +285,7 @@ test('ordinary opening ignores earlier saved selections',()=>{
 
 test('reagent price per kilogram appears independently and clears on reset',()=>{
  const b=boot();assert.equal(b.get('reagent-mass-price').hidden,true);
- b.change('reagent','li');assert.equal(b.get('reagent-mass-price').textContent,'4,060 USD / kg');assert.equal(b.get('reagent-mass-price').hidden,false);assert.equal(b.get('voltage-comparison').hidden,true);
+ b.change('reagent','li');assert.equal(b.get('reagent-mass-price').textContent,'4 060 USD / kg');assert.equal(b.get('reagent-mass-price').hidden,false);assert.equal(b.get('voltage-comparison').hidden,true);
  b.change('reagent','h2-green');assert.equal(b.get('reagent-mass-price').textContent,'5 USD / kg');
  b.change('energy','solar');b.change('voltage-slider','2','input');assert.equal(b.get('reagent-mass-price').textContent,'5 USD / kg');
  b.get('start-over').listeners.click();assert.equal(b.get('reagent-mass-price').hidden,true);assert.equal(b.get('reagent-mass-price').textContent,'');

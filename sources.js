@@ -8,7 +8,7 @@ const SourceCatalogue = (() => {
   }
   return {rows,search};
 })();
-function sourceElement(tag,text,className){const e=document.createElement(tag);if(text)e.textContent=text;if(className)e.className=className;return e;}
+function sourceElement(tag,text,className){const e=document.createElement(tag);if(text)e.textContent=text.replace(/\b\d{1,3}(?:,\d{3})+(?:\.\d+)?\b/g,n=>n.replaceAll(',', ' '));if(className)e.className=className;return e;}
 function renderSources(){
   const get=id=>document.getElementById(id);
   const rows=SourceCatalogue.search(get('source-search').value,get('source-kind').value);
@@ -18,7 +18,7 @@ function renderSources(){
     const published=sourceElement('td');published.append(sourceElement('strong',r.reported),sourceElement('small',r.period),sourceElement('small',r.region),sourceElement('small',r.basis));
     const cost=sourceElement('td');
     if(r.status==='Referenced'){
-      const a=sourceElement('a',r.value.toLocaleString('en-US',{maximumFractionDigits:7})+' '+r.unit);a.href=r.source;a.setAttribute('aria-label',r.name+': '+r.value+' '+r.unit+'; open reference');cost.append(a);
+      const a=sourceElement('a',r.value.toLocaleString('en-US',{maximumFractionDigits:7}).replaceAll(',', ' ')+' '+r.unit);a.href=r.source;a.setAttribute('aria-label',r.name+': '+r.value+' '+r.unit+'; open reference');cost.append(a);
     }else cost.append(sourceElement('span','Not used'));
     const evidence=sourceElement('td');for(const ref of r.references){const a=sourceElement('a',ref.label);a.href=ref.url;evidence.append(a);}
     evidence.append(sourceElement('p',r.conversion));

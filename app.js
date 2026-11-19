@@ -3,7 +3,7 @@ const $ = id => document.getElementById(id);
 const numeric = ['price','mass','electrons','utilization','tariff','voltage','faradaic','supply','amount'];
 let current;
 const carriedScenario = ScenarioNav.read();
-const number = (v, digits=4) => !Number.isFinite(v) ? '—' : v === 0 ? '0' : Math.abs(v)<.0001 || Math.abs(v)>=1e6 ? v.toExponential(3) : v.toLocaleString('en-US',{maximumSignificantDigits:digits});
+const number = (v, digits=4) => !Number.isFinite(v) ? '—' : v === 0 ? '0' : Math.abs(v)<.0001 || Math.abs(v)>=1e6 ? v.toExponential(3) : v.toLocaleString('en-US',{maximumSignificantDigits:digits}).replaceAll(',', ' ');
 function state() {
   const s = Object.fromEntries(numeric.map(k=>[k,$(k).value.trim()==='' ? NaN : Number($(k).value)]));
   return {...s,...($('energy').value==='custom'&&$('valcoe').checked?{energyMetric:'valcoe'}:{}),reagent:$('reagent').value,energy:$('energy').value,legacy:$('legacy').checked,plotMax:Number($('plot-max').value)};

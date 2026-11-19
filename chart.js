@@ -1,7 +1,7 @@
 /* Shared, responsive chart. Coordinates remain in CSS pixels on narrow screens. */
 'use strict';
 const ElectronChart = (() => {
-  const fmt=n=>n===0?'0':Number(n.toPrecision(3)).toLocaleString('en-US',{maximumSignificantDigits:3});
+  const fmt=n=>n===0?'0':Number(n.toPrecision(3)).toLocaleString('en-US',{maximumSignificantDigits:3}).replaceAll(',', ' ');
   function draw(chart,s,r,max){
     const w=Math.max(320,chart.clientWidth||650),h=320,left=54,right=92,top=42,bottom=48;
     chart.setAttribute('viewBox',`0 0 ${w} ${h}`);
