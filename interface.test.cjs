@@ -51,7 +51,7 @@ test('selected green hydrogen and solar show comparable populated results',()=>{
   for(const id of ['chemical-price','energy-price'])assert.equal(get(id).children[1].textContent,'USD / mol e⁻');
   assert.equal(get('chemical-price').children[0].textContent,'0.005');assert.equal(get('energy-price').children[0].textContent,'0.001152');
   assert.equal(get('tariff-price').textContent,'0.043 USD / kWh');assert.equal(get('voltage-slider').disabled,false);assert.equal(get('graph-area').hidden,false);
-  assert.match(get('comparison-status').textContent,/Electricity is ~4.3× cheaper at 1 V · break-even at 4.3 V/);
+  assert.match(get('comparison-status').textContent,/^Electricity is ~4.3× cheaper at 1 V$/);
   assert.ok(!fs.readFileSync('index.html','utf8').includes('basis-warning')); 
 });
 test('source choices and voltage change result and preserve scenario',()=>{
@@ -83,9 +83,9 @@ test('max V updates and clamps voltage; invalid ranges do not corrupt the scenar
 test('zero-cost comparisons avoid infinite ratios and label zero crossings',()=>{
   const b=readyBoot();b.change('voltage-slider','0','input');assert.match(b.get('comparison-status').textContent,/Electricity has zero cost/);
   const s=JSON.parse(b.storage.get('electron-cost-scenario'));s.tariff=0;
-  assert.match(boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s))).get('comparison-status').textContent,/no unique break-even/);
+  assert.match(boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s))).get('comparison-status').textContent,/Electricity has zero cost/);
   s.price=0;s.tariff=.043;s.voltage=1;
-  assert.match(boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s))).get('comparison-status').textContent,/chemical reagent has zero cost.*break-even at 0 V/);
+  assert.match(boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s))).get('comparison-status').textContent,/chemical reagent has zero cost/);
 });
 
 test('shared custom input and efficiency values survive navigation',()=>{
@@ -273,7 +273,7 @@ test('rhombus navigation opens, closes, and restores keyboard focus',()=>{
  window.scrollY=100;handlers.pageshow();assert.equal(scrolled,true);assert.equal(header.inert,true);
  window.scrollY=0;handlers.pageshow();assert.equal(scrolled,false);assert.equal(header.inert,false);
  for(const page of ['index.html','details.html','assumptions.html','sources.html']){
-  const html=fs.readFileSync(page,'utf8');assert.ok(html.includes('aria-controls="main-menu"'));assert.match(html,/<header class="site-header shell">[\s\S]*?class="menu-outline"[\s\S]*?<\/header>/);assert.ok(html.includes('styles.css?v=20261118-footer'));assert.ok(html.includes('src="menu.js?v=20261118-footer"'));
+  const html=fs.readFileSync(page,'utf8');assert.ok(html.includes('aria-controls="main-menu"'));assert.match(html,/<header class="site-header shell">[\s\S]*?class="menu-outline"[\s\S]*?<\/header>/);assert.ok(html.includes('styles.css?v=20261119-center'));assert.ok(html.includes('src="menu.js?v=20261118-footer"'));
  }
  assert.ok(fs.readFileSync('.github/workflows/pages.yml','utf8').includes('menu.js'));
 });
@@ -339,6 +339,14 @@ test('source changes handle zero crossing and no finite crossing; shared voltage
  const base=readyBoot();const s=JSON.parse(base.storage.get('electron-cost-scenario'));s.price=0;s.voltage=2;
  const zero=boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s)));zero.change('energy','us');assert.equal(zero.get('voltage-slider').value,'0');
  s.price=5;s.energy='custom';s.tariff=0;s.voltage=2;
- const free=boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s)));free.change('reagent','li');assert.equal(free.get('voltage-slider').value,'2');assert.match(free.get('comparison-status').textContent,/no unique break-even/);
+ const free=boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s)));free.change('reagent','li');assert.equal(free.get('voltage-slider').value,'2');assert.equal(free.get('center-break-even').disabled,true);
  const shared=boot(null,'#lithium-vs-us-grid?v=2.5');assert.equal(shared.get('voltage-slider').value,'2.5');
+});
+
+test('Center at break even restores the crossing after a manual voltage change',()=>{
+ const b=boot();b.change('reagent','li');b.change('energy','us');b.change('max-voltage','10','input');b.change('voltage-slider','1','input');
+ assert.ok(!b.get('comparison-status').textContent.includes('break-even'));assert.equal(b.get('center-break-even').disabled,false);
+ b.get('center-break-even').listeners.click();const s=JSON.parse(b.storage.get('electron-cost-scenario'));const result=vm.runInContext('ElectronModel.calculate(scenario)',b.context);
+ assert.equal(s.voltage,result.breakEven);assert.ok(s.plotMax>s.voltage);assert.match(b.get('comparison-status').textContent,/^The costs are equal at/);
+ s.tariff=0;s.energy='custom';const free=boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s)));assert.equal(free.get('center-break-even').disabled,true);
 });

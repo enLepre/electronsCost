@@ -318,3 +318,5 @@ body .repository-footer{
 .repository-footer .footer-navigation a[aria-current=page]{text-decoration:underline;text-underline-offset:4px}
 body.is-page-scrolled .repository-footer{opacity:0;visibility:hidden;pointer-events:none;transform:translateX(-50%) translateY(12px)}
 @media(prefers-reduced-motion:reduce){body .repository-footer{transition:none}}
+
+.voltage-heading>output{margin-right:0}.voltage-heading #center-break-even{margin-right:auto}

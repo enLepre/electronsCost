@@ -27,6 +27,7 @@ function render(){
   slider.setAttribute('aria-valuetext',format(scenario.voltage)+' volts');
   const ready=!!(scenario.reagent&&scenario.energy);
   el('voltage-comparison').hidden=!ready;
+  el('center-break-even').disabled=!ready;
   el('example-footer').hidden=ready;
   el('share-comparison').disabled=!ready;
   el('download-result').disabled=!ready;
@@ -48,8 +49,9 @@ function render(){
     price('energy-price',result.electrical,'USD / mol e⁻');
     const low=Math.min(result.chemical,result.electrical),high=Math.max(result.chemical,result.electrical);
     const verdict=result.winner==='equal'?'The costs are equal':(result.winner==='electricity'?'Electricity':'The chemical reagent')+(low===0?' has zero cost':' is ~'+format(high/low,2)+'× cheaper');
-    const crossing=result.breakEven===null?'no unique break-even':('break-even at '+format(result.breakEven,2)+' V');
-    el('comparison-status').textContent=verdict+' at '+format(scenario.voltage)+' V · '+crossing;
+    el('center-break-even').disabled=result.breakEven===null||!Number.isFinite(result.breakEven);
+    el('center-break-even').title=el('center-break-even').disabled?'No finite, unique break-even voltage':'Set voltage to the break-even point';
+    el('comparison-status').textContent=verdict+' at '+format(scenario.voltage)+' V';
     ScenarioNav.save(scenario);draw(result,max);
   }catch(e){el('graph-area').hidden=true;slider.disabled=true;el('comparison-status').textContent='';el('simple-error').hidden=false;el('simple-error').textContent=e.message;}
 }
@@ -152,3 +154,5 @@ el('try-example').addEventListener('click',()=>{
   el('max-voltage').setAttribute('aria-invalid','false');
   selectBreakEven();render();
 });
+
+el('center-break-even').addEventListener('click',()=>{selectBreakEven();render();});
