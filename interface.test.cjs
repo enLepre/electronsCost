@@ -30,7 +30,7 @@ function boot(saved=null,hash='',page='index.html'){
 }
 function readyBoot(saved=null,hash='',page='index.html'){
  const b=boot(saved,hash,page);
- if(page==='index.html'&&!saved&&!hash){b.change('reagent','h2-green');b.change('energy','solar');}
+ if(page==='index.html'&&!saved&&!hash){b.change('reagent','h2-green');b.change('energy','solar');b.change('voltage-slider','1','input');}
  return b;
 }
 
@@ -56,7 +56,7 @@ test('selected green hydrogen and solar show comparable populated results',()=>{
 });
 test('source choices and voltage change result and preserve scenario',()=>{
   const b=readyBoot();b.change('reagent','h2-grey');b.change('energy','eu');
-  assert.match(b.get('comparison-status').textContent,/chemical reagent.*cheaper/);
+  assert.match(b.get('comparison-status').textContent,/The costs are equal/);
   const previous=b.get('comparison-chart').innerHTML;b.change('voltage-slider','0.01','input');
   assert.match(b.get('comparison-status').textContent,/Electricity.*cheaper/);assert.notEqual(b.get('comparison-chart').innerHTML,previous);
   const stored=JSON.parse(b.storage.get('electron-cost-scenario'));assert.equal(stored.voltage,.01);
@@ -309,8 +309,8 @@ test('Share offers a selectable link when clipboard access is unavailable',async
 
 test('Try an example loads a complete comparison and Start over clears it',()=>{
  const b=boot();assert.equal(b.get('reagent').value,'');assert.equal(b.get('energy').value,'');
- b.get('try-example').listeners.click();assert.equal(b.get('reagent').value,'h2-green');assert.equal(b.get('energy').value,'solar');assert.equal(b.get('voltage-value').textContent,'1 V');assert.equal(b.get('voltage-comparison').hidden,false);assert.equal(b.get('graph-area').hidden,false);assert.equal(b.get('share-comparison').disabled,false);
- b.change('voltage-slider','3','input');b.get('try-example').listeners.click();assert.equal(b.get('voltage-value').textContent,'1 V');
+ b.get('try-example').listeners.click();assert.equal(b.get('reagent').value,'h2-green');assert.equal(b.get('energy').value,'solar');assert.match(b.get('comparison-status').textContent,/The costs are equal/);assert.equal(b.get('voltage-comparison').hidden,false);assert.equal(b.get('graph-area').hidden,false);assert.equal(b.get('share-comparison').disabled,false);
+ b.change('voltage-slider','3','input');b.get('try-example').listeners.click();assert.match(b.get('comparison-status').textContent,/The costs are equal/);
  b.get('start-over').listeners.click();assert.equal(b.get('reagent').value,'');assert.equal(b.get('energy').value,'');assert.equal(b.get('voltage-comparison').hidden,true);
 });
 
@@ -323,4 +323,22 @@ test('example button hides only after both selections and returns after reset',(
   b.get('try-example').listeners.click();assert.equal(b.get('example-footer').hidden,true);
  }
  const shared=boot(null,'#green-hydrogen-vs-solar');assert.equal(shared.get('example-footer').hidden,true);
+});
+
+test('choosing sources selects the exact break-even voltage and expands the graph range',()=>{
+ for(const first of ['reagent','energy']){
+  const b=boot();b.change(first,first==='reagent'?'li':'us');b.change(first==='reagent'?'energy':'reagent',first==='reagent'?'us':'li');
+  let s=JSON.parse(b.storage.get('electron-cost-scenario'));let r=vm.runInContext('ElectronModel.calculate(scenario)',b.context);
+  assert.equal(s.voltage,r.breakEven);assert.ok(s.plotMax>s.voltage);assert.ok(s.voltage>5);assert.match(b.get('comparison-status').textContent,/The costs are equal/);
+  b.change('voltage-slider','2','input');assert.equal(JSON.parse(b.storage.get('electron-cost-scenario')).voltage,2);
+  b.change('reagent','h2-green');s=JSON.parse(b.storage.get('electron-cost-scenario'));r=vm.runInContext('ElectronModel.calculate(scenario)',b.context);assert.equal(s.voltage,r.breakEven);
+  b.change('energy','solar');b.get('valcoe').checked=true;b.get('valcoe').listeners.change();s=JSON.parse(b.storage.get('electron-cost-scenario'));r=vm.runInContext('ElectronModel.calculate(scenario)',b.context);assert.equal(s.voltage,r.breakEven);
+ }
+});
+test('source changes handle zero crossing and no finite crossing; shared voltage stays intact',()=>{
+ const base=readyBoot();const s=JSON.parse(base.storage.get('electron-cost-scenario'));s.price=0;s.voltage=2;
+ const zero=boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s)));zero.change('energy','us');assert.equal(zero.get('voltage-slider').value,'0');
+ s.price=5;s.energy='custom';s.tariff=0;s.voltage=2;
+ const free=boot(null,'#scenario='+encodeURIComponent(JSON.stringify(s)));free.change('reagent','li');assert.equal(free.get('voltage-slider').value,'2');assert.match(free.get('comparison-status').textContent,/no unique break-even/);
+ const shared=boot(null,'#lithium-vs-us-grid?v=2.5');assert.equal(shared.get('voltage-slider').value,'2.5');
 });

@@ -53,23 +53,35 @@ function render(){
     ScenarioNav.save(scenario);draw(result,max);
   }catch(e){el('graph-area').hidden=true;slider.disabled=true;el('comparison-status').textContent='';el('simple-error').hidden=false;el('simple-error').textContent=e.message;}
 }
+function selectBreakEven(){
+  if(!scenario.reagent||!scenario.energy)return;
+  const result=ElectronModel.calculate(scenario),voltage=result.breakEven;
+  if(voltage===null||!Number.isFinite(voltage))return;
+  // Leave room beyond the crossing and keep the maximum easy to read.
+  const padded=voltage*1.25;
+  const unit=padded>0?10**Math.floor(Math.log10(padded)):1;
+  const max=Math.max(5,Math.ceil(padded/unit)*unit);
+  if(!Number.isFinite(max)||!Number.isFinite(result.slope*max*1000))return;
+  scenario.voltage=voltage;scenario.plotMax=max;
+  el('max-voltage').setAttribute('aria-invalid','false');
+}
 function draw(r,max){ElectronChart.draw(el('comparison-chart'),scenario,r,max);}
 el('reagent').addEventListener('change',()=>{
   const r=REAGENTS.find(r=>r.id===el('reagent').value);scenario.reagent=r.id;
   scenario.price=r.price;scenario.mass=scenario.legacy?r.legacyMass??r.mass:r.mass;scenario.electrons=scenario.legacy?r.legacyN??r.n:r.n;
-  if(r.id==='custom'){openCustom();return;}render();
+  if(r.id==='custom'){openCustom();return;}selectBreakEven();render();
 });
 el('valcoe').addEventListener('change',()=>{
   const previous=scenario.energy,mode=el('valcoe').checked?'valcoe':'lcoe';
   scenario=EnergyChoices.switchMetric(scenario,mode);
   el('metric-status').textContent=mode==='valcoe'&&previous!=='custom'&&!scenario.energy.startsWith(previous+'-')?'This source has no verified VALCOE. Solar PV has been selected.':'';
-  render();
+  selectBreakEven();render();
 });
 el('energy').addEventListener('change',()=>{
   el('metric-status').textContent='';
   const mode=el('valcoe').checked?'valcoe':'lcoe';
   const e=ENERGY.find(e=>e.id===el('energy').value);scenario.energy=e.id;scenario.tariff=e.tariff;if(e.id==='custom')scenario.energyMetric=mode;else delete scenario.energyMetric;
-  if(e.id==='custom'){openCustom();return;}render();
+  if(e.id==='custom'){openCustom();return;}selectBreakEven();render();
 });
 function openCustom(){
   // The detailed editor needs a complete scenario; the unchosen side starts with its documented default.
@@ -138,5 +150,5 @@ el('try-example').addEventListener('click',()=>{
   scenario={...emptyScenario(),reagent:defaultReagent.id,energy:defaultEnergy.id};
   el('metric-status').textContent='';
   el('max-voltage').setAttribute('aria-invalid','false');
-  render();
+  selectBreakEven();render();
 });
