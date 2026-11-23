@@ -106,7 +106,7 @@ test('all four pages and their scripts are included in deployment',()=>{
     }
     const header=html.match(/<nav id="main-menu"[\s\S]*?<\/nav>/)[0];
     assert.ok(header.includes('sources.html'));assert.ok(!header.includes('github.com'));
-    assert.ok(html.match(/<footer[\s\S]*?github.com[\s\S]*?<\/footer>/));
+    const footer=html.match(/<footer[\s\S]*?<\/footer>/)[0];assert.ok(footer.includes('About the author'));assert.ok(!footer.includes('github.com'));
     assert.ok(header.includes('class="theme-moon"'));assert.ok(header.includes('class="theme-sun"'));
   }
   const home=fs.readFileSync('index.html','utf8');assert.ok(home.includes('<h1>Which electron is cheaper?</h1>'));assert.ok(!home.includes('id="inputs"'));assert.ok(!home.includes('id="method"'));
